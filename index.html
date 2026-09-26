@@ -335,7 +335,10 @@
   .foot-col a{display:block;font-size:13.5px;color:#aeb9d4;margin-bottom:10px;}
   .foot-col a:hover{color:var(--cyan-400);}
   .foot-badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;}
-  .badge{font-size:11px;font-family:'IBM Plex Mono',monospace;border:1px solid rgba(255,255,255,0.14);border-radius:6px;padding:6px 10px;color:#c9d3e8;}
+  .badge{font-size:11px;font-family:'IBM Plex Mono',monospace;border:1px solid rgba(255,255,255,0.14);border-radius:6px;padding:6px 10px;color:#c9d3e8;background:transparent;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;transition:all .2s ease;}
+.badge:hover,.badge:focus-visible{border-color:rgba(86,220,190,.65);color:#fff;background:rgba(86,220,190,.08);transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.18);outline:none;}
+.badge:active{transform:translateY(0);}
+.foot-badges{display:flex;flex-wrap:wrap;gap:8px;}
   .foot-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:26px;flex-wrap:wrap;gap:12px;font-size:12.5px;}
 
   .fade-in{opacity:0;transform:translateY(16px);transition:opacity .6s ease, transform .6s ease;}
