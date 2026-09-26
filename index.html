@@ -403,7 +403,7 @@
 /* Social links */
 .social-links{display:flex;align-items:center;gap:7px;margin-left:8px}
 .social-icon{width:30px;height:30px;border:1px solid rgba(47,85,153,.28);border-radius:8px;display:inline-flex;align-items:center;justify-content:center;color:#2f5599;background:#fff;font-size:12px;font-weight:800;line-height:1;transition:.2s ease}
-.social-icon:hover{border-color:#2f5599;background:#eef5fb;transform:translateY(-1px)}
+.social-icon svg{width:16px;height:16px;display:block;flex:none}.social-icon:hover{border-color:#2f5599;background:#eef5fb;transform:translateY(-1px)}
 .social-icon.linkedin{color:#1769a6;border-color:#1769a6;background:#f3f9fd}
 .social-placeholder{opacity:.55;cursor:default}
 .footer-social{margin:0 0 22px}
@@ -429,13 +429,13 @@
       <a href="#faq">FAQ</a>
     </nav>
     <div class="social-links" aria-label="Social links">
-<a class="social-icon linkedin" href="https://www.linkedin.com/company/kartik-clarity/?viewAsMember=true" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">in</a>
-<span class="social-icon social-placeholder" aria-label="YouTube">▶</span>
-<span class="social-icon social-placeholder" aria-label="Instagram">◎</span>
-<span class="social-icon social-placeholder" aria-label="Twitter X">𝕏</span>
-<span class="social-icon social-placeholder" aria-label="Reddit">●</span>
-<span class="social-icon social-placeholder" aria-label="Discord">◌</span>
-<span class="social-icon social-placeholder" aria-label="Blog">B</span>
+<a class="social-icon linkedin" href="https://www.linkedin.com/company/kartik-clarity/?viewAsMember=true" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" title="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6.5 8.1H3.2V21h3.3V8.1ZM4.85 3A2 2 0 1 0 4.85 7 2 2 0 0 0 4.85 3ZM21 13.6c0-3.88-2.07-5.69-4.84-5.69-2.23 0-3.23 1.23-3.79 2.09V8.1H9.05V21h3.32v-6.39c0-1.68.32-3.3 2.4-3.3 2.05 0 2.08 1.92 2.08 3.41V21H21v-7.4Z"/></svg></a>
+<span class="social-icon social-placeholder" aria-label="YouTube" title="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M23.5 7.1a3 3 0 0 0-2.1-2.12C19.5 4.5 12 4.5 12 4.5s-7.5 0-9.4.48A3 3 0 0 0 .5 7.1 31 31 0 0 0 0 12a31 31 0 0 0 .5 4.9 3 3 0 0 0 2.1 2.12c1.9.48 9.4.48 9.4.48s7.5 0 9.4-.48a3 3 0 0 0 2.1-2.12A31 31 0 0 0 24 12a31 31 0 0 0-.5-4.9ZM9.6 15.9V8.1l6.5 3.9-6.5 3.9Z"/></svg></span>
+<span class="social-icon social-placeholder" aria-label="Instagram" title="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/></svg></span>
+<span class="social-icon social-placeholder" aria-label="Twitter X" title="X"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 3h4.2l4.05 5.43L16.9 3H20l-6.3 7.2L20.5 21h-4.2l-4.6-6.18L6.8 21H3.7l6.45-7.38L4 3Zm3.4 1.7H5.9l9.9 14.6h1.5L7.4 4.7Z"/></svg></span>
+<span class="social-icon social-placeholder" aria-label="Reddit" title="Reddit"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21 11.4c0-1.2-1-2.1-2.2-2.1-.6 0-1.1.2-1.5.6-1.4-.9-3.2-1.4-5.1-1.5l1-3.1 2.8.6a1.6 1.6 0 1 0 .3-1.3l-3.5-.7c-.3-.1-.6.1-.7.4l-1.2 4.1c-1.9.1-3.7.6-5.1 1.5a2.2 2.2 0 1 0-1.4 3.8c0 .3 0 .6.1.9.6 2.7 3.9 4.8 7.8 4.8s7.2-2.1 7.8-4.8c.1-.3.1-.6.1-.9 1.1-.2 1.8-1.1 1.8-2.3ZM8.3 13.4c.7 0 1.3.6 1.3 1.3S9 16 8.3 16 7 15.4 7 14.7s.6-1.3 1.3-1.3Zm7.4 0c.7 0 1.3.6 1.3 1.3s-.6 1.3-1.3 1.3-1.3-.6-1.3-1.3.6-1.3 1.3-1.3ZM9.1 17.1c1.6 1 4.2 1 5.8 0-.7 1.7-5.1 1.7-5.8 0Z"/></svg></span>
+<span class="social-icon social-placeholder" aria-label="Discord" title="Discord"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19.5 5.1A16.4 16.4 0 0 0 15.6 4l-.5 1.1a14.2 14.2 0 0 0-6.2 0L8.4 4a16.4 16.4 0 0 0-3.9 1.1C2 8.1 1.4 12 1.7 15.8a16.5 16.5 0 0 0 4.8 2.4l1.2-1.7c-.7-.3-1.4-.7-2-1.2l.5-.4c3.8 1.8 8 1.8 11.8 0l.5.4c-.6.5-1.3.9-2 1.2l1.2 1.7a16.5 16.5 0 0 0 4.8-2.4c.4-4.4-.7-8.3-3-10.7ZM8.3 14.1c-1.1 0-2-1-2-2.2s.9-2.2 2-2.2 2 1 2 2.2-.9 2.2-2 2.2Zm7.4 0c-1.1 0-2-1-2-2.2s.9-2.2 2-2.2 2 1 2 2.2-.9 2.2-2 2.2Z"/></svg></span>
+<span class="social-icon social-placeholder" aria-label="Blog" title="Blog"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M5 4h10a4 4 0 0 1 4 4v12H8a3 3 0 0 1-3-3V4Zm3 2v11c0 .6.4 1 1 1h8V8a2 2 0 0 0-2-2H8Z"/><path fill="currentColor" d="M9 9h6v1.6H9zM9 12h6v1.6H9z"/></svg></span>
 </div>
     <div class="header-actions">
       <button class="signin-link" onclick="openSignin()">Sign in</button>
@@ -773,13 +773,13 @@
 <footer>
   <div class="wrap">
     <div class="footer-social"><div class="foot-col"><h4>Connect</h4><div class="social-links" aria-label="Social links">
-<a class="social-icon linkedin" href="https://www.linkedin.com/company/kartik-clarity/?viewAsMember=true" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">in</a>
-<span class="social-icon social-placeholder" aria-label="YouTube">▶</span>
-<span class="social-icon social-placeholder" aria-label="Instagram">◎</span>
-<span class="social-icon social-placeholder" aria-label="Twitter X">𝕏</span>
-<span class="social-icon social-placeholder" aria-label="Reddit">●</span>
-<span class="social-icon social-placeholder" aria-label="Discord">◌</span>
-<span class="social-icon social-placeholder" aria-label="Blog">B</span>
+<a class="social-icon linkedin" href="https://www.linkedin.com/company/kartik-clarity/?viewAsMember=true" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" title="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6.5 8.1H3.2V21h3.3V8.1ZM4.85 3A2 2 0 1 0 4.85 7 2 2 0 0 0 4.85 3ZM21 13.6c0-3.88-2.07-5.69-4.84-5.69-2.23 0-3.23 1.23-3.79 2.09V8.1H9.05V21h3.32v-6.39c0-1.68.32-3.3 2.4-3.3 2.05 0 2.08 1.92 2.08 3.41V21H21v-7.4Z"/></svg></a>
+<span class="social-icon social-placeholder" aria-label="YouTube" title="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M23.5 7.1a3 3 0 0 0-2.1-2.12C19.5 4.5 12 4.5 12 4.5s-7.5 0-9.4.48A3 3 0 0 0 .5 7.1 31 31 0 0 0 0 12a31 31 0 0 0 .5 4.9 3 3 0 0 0 2.1 2.12c1.9.48 9.4.48 9.4.48s7.5 0 9.4-.48a3 3 0 0 0 2.1-2.12A31 31 0 0 0 24 12a31 31 0 0 0-.5-4.9ZM9.6 15.9V8.1l6.5 3.9-6.5 3.9Z"/></svg></span>
+<span class="social-icon social-placeholder" aria-label="Instagram" title="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/></svg></span>
+<span class="social-icon social-placeholder" aria-label="Twitter X" title="X"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 3h4.2l4.05 5.43L16.9 3H20l-6.3 7.2L20.5 21h-4.2l-4.6-6.18L6.8 21H3.7l6.45-7.38L4 3Zm3.4 1.7H5.9l9.9 14.6h1.5L7.4 4.7Z"/></svg></span>
+<span class="social-icon social-placeholder" aria-label="Reddit" title="Reddit"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21 11.4c0-1.2-1-2.1-2.2-2.1-.6 0-1.1.2-1.5.6-1.4-.9-3.2-1.4-5.1-1.5l1-3.1 2.8.6a1.6 1.6 0 1 0 .3-1.3l-3.5-.7c-.3-.1-.6.1-.7.4l-1.2 4.1c-1.9.1-3.7.6-5.1 1.5a2.2 2.2 0 1 0-1.4 3.8c0 .3 0 .6.1.9.6 2.7 3.9 4.8 7.8 4.8s7.2-2.1 7.8-4.8c.1-.3.1-.6.1-.9 1.1-.2 1.8-1.1 1.8-2.3ZM8.3 13.4c.7 0 1.3.6 1.3 1.3S9 16 8.3 16 7 15.4 7 14.7s.6-1.3 1.3-1.3Zm7.4 0c.7 0 1.3.6 1.3 1.3s-.6 1.3-1.3 1.3-1.3-.6-1.3-1.3.6-1.3 1.3-1.3ZM9.1 17.1c1.6 1 4.2 1 5.8 0-.7 1.7-5.1 1.7-5.8 0Z"/></svg></span>
+<span class="social-icon social-placeholder" aria-label="Discord" title="Discord"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19.5 5.1A16.4 16.4 0 0 0 15.6 4l-.5 1.1a14.2 14.2 0 0 0-6.2 0L8.4 4a16.4 16.4 0 0 0-3.9 1.1C2 8.1 1.4 12 1.7 15.8a16.5 16.5 0 0 0 4.8 2.4l1.2-1.7c-.7-.3-1.4-.7-2-1.2l.5-.4c3.8 1.8 8 1.8 11.8 0l.5.4c-.6.5-1.3.9-2 1.2l1.2 1.7a16.5 16.5 0 0 0 4.8-2.4c.4-4.4-.7-8.3-3-10.7ZM8.3 14.1c-1.1 0-2-1-2-2.2s.9-2.2 2-2.2 2 1 2 2.2-.9 2.2-2 2.2Zm7.4 0c-1.1 0-2-1-2-2.2s.9-2.2 2-2.2 2 1 2 2.2-.9 2.2-2 2.2Z"/></svg></span>
+<span class="social-icon social-placeholder" aria-label="Blog" title="Blog"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M5 4h10a4 4 0 0 1 4 4v12H8a3 3 0 0 1-3-3V4Zm3 2v11c0 .6.4 1 1 1h8V8a2 2 0 0 0-2-2H8Z"/><path fill="currentColor" d="M9 9h6v1.6H9zM9 12h6v1.6H9z"/></svg></span>
 </div></div></div>
     <div class="foot-top">
       <div>
