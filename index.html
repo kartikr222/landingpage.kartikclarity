@@ -340,6 +340,13 @@
 .badge:active{transform:translateY(0);}
 .badge:active{transform:translateY(0);}
 .foot-badges{display:flex;flex-wrap:wrap;gap:8px;}
+.legal-card{max-width:760px;max-height:min(82vh,760px);overflow:hidden;}
+.legal-body{max-height:65vh;overflow:auto;padding-right:8px;color:#b8c5db;font-size:13px;line-height:1.7;}
+.legal-body h4{color:#f1f5fb;font-size:14px;margin:22px 0 7px;}
+.legal-body p{margin:0 0 12px;}
+.legal-body ul{margin:0 0 14px;padding-left:20px;}
+.legal-body li{margin-bottom:6px;}
+.legal-body strong{color:#e9eef7;}
   .foot-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:26px;flex-wrap:wrap;gap:12px;font-size:12.5px;}
 
   .fade-in{opacity:0;transform:translateY(16px);transition:opacity .6s ease, transform .6s ease;}
@@ -777,8 +784,8 @@
     <div class="foot-bottom">
       <span>&copy; 2026 Kartik Clarity™. All rights reserved.</span>
       <span style="display:flex;gap:18px;">
-        <a href="javascript:void(0)" onclick="openLegal('Privacy Policy','This page is a placeholder. Add your finalized privacy policy text here before taking the site live for paying customers.')">Privacy Policy</a>
-        <a href="javascript:void(0)" onclick="openLegal('Terms of Service','This page is a placeholder. Add your finalized terms of service text here before taking the site live for paying customers.')">Terms of Service</a>
+        <a href="#privacy" onclick="openLegal('Privacy Policy', privacyPolicy); return false;">Privacy Policy</a>
+        <a href="#terms" onclick="openLegal('Terms of Service', termsOfService); return false;">Terms of Service</a>
       </span>
     </div>
   </div>
@@ -806,10 +813,10 @@
 </div>
 
 <div class="modal-overlay" id="legalOverlay" onclick="if(event.target===this)closeLegal()">
-  <div class="modal-card">
+  <div class="modal-card legal-card">
     <button class="modal-close" onclick="closeLegal()" aria-label="Close">&times;</button>
     <h3 id="legalTitle">Privacy Policy</h3>
-    <p class="modal-sub" id="legalBody">This page is a placeholder. Add your finalized policy text here before taking the site live for paying customers.</p>
+    <div class="legal-body" id="legalBody"></div>
   </div>
 </div>
 
@@ -839,10 +846,105 @@
   function openSignin(){ document.getElementById('signinOverlay').classList.add('open'); document.body.style.overflow='hidden'; }
   function closeSignin(){ document.getElementById('signinOverlay').classList.remove('open'); document.body.style.overflow=''; }
 
-  // legal placeholder modal
+  // Legal pages
+  const privacyPolicy = `
+    <p><strong>Last updated: September 26, 2026</strong></p>
+    <p>Kartik Clarity™ respects your privacy. This Privacy Policy explains what information we may collect through this website and our tools, why we use it, how we protect it, and the choices available to you.</p>
+
+    <h4>1. Information we may collect</h4>
+    <ul>
+      <li><strong>Contact information:</strong> name, work email, company, role, and information you voluntarily provide when contacting us, requesting a diagnostic, or expressing interest in an offering.</li>
+      <li><strong>Business information:</strong> information you choose to enter into assessments, forms, diagnostics, or consulting workflows, including revenue, pipeline, conversion, sales-process, CRM, or operational information.</li>
+      <li><strong>Transaction information:</strong> information associated with purchases or payment requests. Payment-card details are handled by the applicable payment provider rather than stored by this website.</li>
+      <li><strong>Technical information:</strong> browser, device, IP address, approximate location, pages visited, referring pages, and similar information that may be generated through hosting, security, analytics, or website infrastructure.</li>
+      <li><strong>Communications:</strong> messages, emails, support requests, and other information you send to us.</li>
+    </ul>
+
+    <h4>2. How we use information</h4>
+    <p>We may use information to operate and secure the website, provide requested tools and services, deliver diagnostics or consulting, process purchases, respond to inquiries, communicate about services, improve our products and content, prevent misuse, maintain records, and comply with applicable legal obligations.</p>
+
+    <h4>3. Diagnostic and AI-assisted processing</h4>
+    <p>If you submit business information to a diagnostic or tool, that information may be processed to generate a directional analysis, score, classification, or recommendation. Where AI-assisted processing is used, outputs are estimates and should be reviewed by qualified humans before material business decisions or external use. Do not submit information you are not authorized to share.</p>
+
+    <h4>4. Payments and third-party services</h4>
+    <p>Purchases may be processed through Dodo Payments. Other infrastructure or service providers may process information on our behalf for functions such as hosting, authentication, communications, analytics, security, or application delivery. We seek to use information only for legitimate business purposes and appropriate safeguards.</p>
+
+    <h4>5. Cookies and similar technologies</h4>
+    <p>The website may use cookies or similar technologies that are necessary for functionality, security, preferences, or analytics. Where consent is legally required, applicable consent choices will be provided.</p>
+
+    <h4>6. Data retention</h4>
+    <p>We retain information only for as long as reasonably necessary for the purpose for which it was collected, legitimate business needs, dispute resolution, security, and applicable legal or accounting requirements. Retention periods may vary by information type and service.</p>
+
+    <h4>7. Security</h4>
+    <p>We use reasonable technical and organizational measures intended to protect information against unauthorized access, alteration, disclosure, or destruction. No internet transmission or storage system can be guaranteed to be completely secure.</p>
+
+    <h4>8. Your choices and rights</h4>
+    <p>Depending on where you live and applicable law, you may have rights to request access, correction, deletion, restriction, portability, or objection to certain processing, or to withdraw consent where processing is based on consent. Requests may be sent to <a href="mailto:hello@kartikclarity.com">hello@kartikclarity.com</a>. We may need to verify your identity before completing a request.</p>
+
+    <h4>9. International processing</h4>
+    <p>Service providers may process information in countries other than the country where you are located. Where applicable law requires safeguards for international transfers, we intend to use appropriate safeguards.</p>
+
+    <h4>10. Children</h4>
+    <p>Our services are intended for business users and are not directed to children. We do not knowingly request personal information from children for these services.</p>
+
+    <h4>11. Changes</h4>
+    <p>We may update this Privacy Policy as our services, technology, or legal obligations change. The updated version will be posted on this website with a revised “Last updated” date.</p>
+
+    <h4>12. Contact</h4>
+    <p>Privacy questions or requests: <a href="mailto:hello@kartikclarity.com">hello@kartikclarity.com</a>.</p>
+  `;
+
+  const termsOfService = `
+    <p><strong>Effective: September 26, 2026</strong></p>
+    <p>These Terms of Service govern your use of the Kartik Clarity™ website, tools, diagnostics, digital products, and services. By using the site or purchasing an offering, you agree to these Terms.</p>
+
+    <h4>1. Business scope</h4>
+    <p>Kartik Clarity™ currently offers Revenue Leak Detection and related products and services primarily for B2B SaaS companies, consultants, and local businesses in the USA, Canada, and UAE. Nothing on this website creates a promise that an offering is available to every person, company, geography, or industry.</p>
+
+    <h4>2. Intellectual property</h4>
+    <p>Everything published through Kartik Clarity™ — including Revenue Leak Architecture™, the Five Leak Zones, Revenue Leak Detector, Revenue Leak Score™, Revenue Leak OS™, workbooks, tools, diagnostics, consulting materials, written content, recorded content, interactive tools, terminology, classifications, scoring methodology, and diagnostic architecture — is proprietary intellectual property of Kartik Clarity™ or its licensors, except for third-party material identified as such.</p>
+    <p>You may learn from the material and apply general ideas internally. You may not copy, reproduce, republish, repackage, resell, white-label, distribute, teach, commercialize, or present Kartik Clarity™ frameworks or substantial portions of its materials as your own without written authorization. Attribution alone does not create permission to commercialize or repackage the material. Licensing is available only through written authorization from Kartik Clarity™.</p>
+
+    <h4>3. Nature of diagnostics and content</h4>
+    <p>Revenue Leak Architecture™ and the Five Leak Zones are proprietary diagnostic frameworks, not certified accounting or actuarial models. Revenue Leak Score™ is a directional diagnostic, not an audited financial metric. Identified leak amounts are findings or estimates from specific inputs and analyses, not guarantees or forecasts of what every company will recover.</p>
+
+    <h4>4. AI-assisted outputs</h4>
+    <p>Some tools or services may use AI-assisted analysis. Outputs can be incomplete, inaccurate, or unsuitable for a particular situation. AI-assisted outputs should be reviewed by qualified humans before material business decisions or external use.</p>
+
+    <h4>5. No professional advice</h4>
+    <p>Kartik Clarity™ content and services are educational and strategic. They are not legal, financial, tax, accounting, investment, employment, actuarial, or regulatory advice. You are responsible for obtaining qualified professional advice where appropriate.</p>
+
+    <h4>6. No guarantee of results</h4>
+    <p>No result is guaranteed. Case studies and testimonials, where presented, describe specific documented experiences and are not promises of future results. Business outcomes depend on circumstances, implementation, data quality, market conditions, and factors outside our control.</p>
+
+    <h4>7. User responsibilities</h4>
+    <p>You are responsible for the accuracy and legality of information you submit, for having authorization to provide company or third-party data, and for evaluating recommendations before acting on them. Do not use the tools to submit unlawful, confidential, or highly sensitive information unless the applicable service specifically requires and authorizes it.</p>
+
+    <h4>8. Digital products and payments</h4>
+    <p>Digital products, paid tools, and consulting engagements are provided according to the offer description and any additional written agreement or statement of work that applies. Payments may be processed through Dodo Payments. Where an offering has separate purchase, refund, delivery, or engagement terms, those terms form part of the applicable transaction.</p>
+
+    <h4>9. Third-party services and links</h4>
+    <p>The website may link to or depend on third-party services. Those services operate under their own terms and privacy policies. Kartik Clarity™ is not responsible for the independent operation, content, or policies of third-party services.</p>
+
+    <h4>10. Availability and changes</h4>
+    <p>We may modify, suspend, or discontinue parts of the website or offerings. We do not guarantee uninterrupted availability or that every tool will always be error-free.</p>
+
+    <h4>11. Limitation of responsibility</h4>
+    <p>To the extent permitted by applicable law, you use the website, tools, diagnostics, and content at your own discretion and risk. Kartik Clarity™ is not responsible for decisions or outcomes arising from reliance on directional analyses, estimates, or educational content. Nothing in these Terms excludes liability that cannot lawfully be excluded.</p>
+
+    <h4>12. Third-party content and social media</h4>
+    <p>References, reposts, commentary, or third-party content appearing on personal or social profiles are not automatically part of Kartik Clarity™ services or endorsements. Kartik Clarity™ should not be treated as responsible for statements made by third parties merely because they are referenced or reshared.</p>
+
+    <h4>13. Changes to these Terms</h4>
+    <p>We may update these Terms as the business, services, or legal requirements change. Continued use of the website after an update constitutes acceptance to the extent permitted by law.</p>
+
+    <h4>14. Contact</h4>
+    <p>Questions about these Terms: <a href="mailto:hello@kartikclarity.com">hello@kartikclarity.com</a>.</p>
+  `;
+
   function openLegal(title, body){
     document.getElementById('legalTitle').textContent = title;
-    document.getElementById('legalBody').textContent = body;
+    document.getElementById('legalBody').innerHTML = body;
     document.getElementById('legalOverlay').classList.add('open');
     document.body.style.overflow='hidden';
   }
