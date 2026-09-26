@@ -399,6 +399,18 @@
   }
   .modal-input:focus{outline:none;border-color:var(--navy-500);}
   .modal-legal{font-size:11.5px;color:var(--slate-light);margin-top:16px;line-height:1.5;}
+
+/* Social links */
+.social-links{display:flex;align-items:center;gap:7px;margin-left:8px}
+.social-icon{width:30px;height:30px;border:1px solid rgba(47,85,153,.28);border-radius:8px;display:inline-flex;align-items:center;justify-content:center;color:#2f5599;background:#fff;font-size:12px;font-weight:800;line-height:1;transition:.2s ease}
+.social-icon:hover{border-color:#2f5599;background:#eef5fb;transform:translateY(-1px)}
+.social-icon.linkedin{color:#1769a6;border-color:#1769a6;background:#f3f9fd}
+.social-placeholder{opacity:.55;cursor:default}
+.footer-social{margin:0 0 22px}
+.footer-social .social-links{margin-left:0;gap:9px}
+.footer-social .social-icon{width:34px;height:34px}
+@media(max-width:900px){.header-inner .social-links{display:none}}
+@media(max-width:600px){.footer-social .social-links{flex-wrap:wrap}.footer-social .social-icon{width:36px;height:36px}}
 </style>
 </head>
 <body>
@@ -416,6 +428,15 @@
       <a href="#process">Process</a>
       <a href="#faq">FAQ</a>
     </nav>
+    <div class="social-links" aria-label="Social links">
+<a class="social-icon linkedin" href="https://www.linkedin.com/company/kartik-clarity/?viewAsMember=true" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">in</a>
+<span class="social-icon social-placeholder" aria-label="YouTube">▶</span>
+<span class="social-icon social-placeholder" aria-label="Instagram">◎</span>
+<span class="social-icon social-placeholder" aria-label="Twitter X">𝕏</span>
+<span class="social-icon social-placeholder" aria-label="Reddit">●</span>
+<span class="social-icon social-placeholder" aria-label="Discord">◌</span>
+<span class="social-icon social-placeholder" aria-label="Blog">B</span>
+</div>
     <div class="header-actions">
       <button class="signin-link" onclick="openSignin()">Sign in</button>
       <button class="header-cta" onclick="document.getElementById('assessment').scrollIntoView()">Take the Assessment</button>
@@ -751,6 +772,15 @@
 
 <footer>
   <div class="wrap">
+    <div class="footer-social"><div class="foot-col"><h4>Connect</h4><div class="social-links" aria-label="Social links">
+<a class="social-icon linkedin" href="https://www.linkedin.com/company/kartik-clarity/?viewAsMember=true" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">in</a>
+<span class="social-icon social-placeholder" aria-label="YouTube">▶</span>
+<span class="social-icon social-placeholder" aria-label="Instagram">◎</span>
+<span class="social-icon social-placeholder" aria-label="Twitter X">𝕏</span>
+<span class="social-icon social-placeholder" aria-label="Reddit">●</span>
+<span class="social-icon social-placeholder" aria-label="Discord">◌</span>
+<span class="social-icon social-placeholder" aria-label="Blog">B</span>
+</div></div></div>
     <div class="foot-top">
       <div>
         <div class="foot-brand">
