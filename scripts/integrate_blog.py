@@ -10,6 +10,12 @@ pattern = re.compile(r'<span class="social-icon social-placeholder" aria-label="
 replacement = r'<a class="social-icon blog-link" href="/blog/" aria-label="Blog" title="Blog">\1</a>'
 text, count = pattern.subn(replacement, text)
 
+# Convert the existing YouTube icon placeholders in the current header/footer
+# into real links to the Kartik Clarity YouTube channel.
+youtube_pattern = re.compile(r'<span class="social-icon social-placeholder" aria-label="YouTube" title="YouTube">(.*?)</span>', re.S)
+youtube_replacement = r'<a class="social-icon youtube-link" href="https://youtube.com/@kartikclarity" target="_blank" rel="noopener noreferrer" aria-label="YouTube" title="YouTube">\1</a>'
+text, youtube_count = youtube_pattern.subn(youtube_replacement, text)
+
 # Add a mobile header Blog link if it is not already present.
 if 'class="mobile-blog-link"' not in text:
     marker = '<button class="signin-link mobile" onclick="closeMobileNav();openSignin()">Sign in</button>'
@@ -21,5 +27,8 @@ if 'class="mobile-blog-link"' not in text:
 if count == 0 and 'href="/blog/"' not in text:
     raise SystemExit('Blog integration marker was not found; refusing to modify index.html.')
 
+if youtube_count == 0 and 'href="https://youtube.com/@kartikclarity"' not in text:
+    raise SystemExit('YouTube integration marker was not found; refusing to modify index.html.')
+
 path.write_text(text, encoding='utf-8')
-print(f'Blog integration complete: converted {count} existing Blog icon placeholder(s).')
+print(f'Navigation integration complete: Blog={count} placeholder(s), YouTube={youtube_count} placeholder(s).')
