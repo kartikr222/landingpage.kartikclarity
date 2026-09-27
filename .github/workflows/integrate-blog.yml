@@ -1,0 +1,30 @@
+name: Integrate Blog Into Existing MVP
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  integrate-blog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Integrate Blog links into existing header and footer
+        run: python scripts/integrate_blog.py
+
+      - name: Commit MVP navigation integration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet; then
+            echo "No integration changes required."
+            exit 0
+          fi
+          git add index.html
+          git commit -m "Integrate blog links into existing MVP navigation"
+          git push
