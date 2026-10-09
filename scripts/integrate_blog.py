@@ -62,7 +62,7 @@ if 'id="kartik-reddit-social-bootstrap"' not in text:
 
 # Verify the intended integrations while accepting both root-relative and relative blog links.
 # The script must be safe to rerun when the links are already integrated.
-if not re.search(r'href=["\\'](?:/)?blog/["\\']', text):
+if not any(link in text for link in ('href="/blog/', 'href="blog/', "href='/blog/", "href='blog/")):
     raise SystemExit('Blog integration failed; no working blog link found.')
 if 'https://youtube.com/@kartikclarityofficial' not in text:
     raise SystemExit('YouTube integration failed; official channel link not found.')
