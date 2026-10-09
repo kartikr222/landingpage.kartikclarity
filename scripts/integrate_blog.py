@@ -13,14 +13,14 @@ text, count = pattern.subn(replacement, text)
 # Convert the existing YouTube icon placeholders in the current header/footer
 # into real links to the Kartik Clarity YouTube channel.
 youtube_pattern = re.compile(r'<span class="social-icon social-placeholder" aria-label="YouTube" title="YouTube">(.*?)</span>', re.S)
-youtube_replacement = r'<a class="social-icon youtube-link" href="https://youtube.com/@kartikclarityofficial" target="_blank" rel="noopener noreferrer" aria-label="YouTube" title="YouTube">\1</a>'
+youtube_replacement = r'<a class="social-icon youtube-link" href="https://youtube.com/@kartikclarity" target="_blank" rel="noopener noreferrer" aria-label="YouTube" title="YouTube">\1</a>'
 text, youtube_count = youtube_pattern.subn(youtube_replacement, text)
 # Normalize only the exact legacy channel URL; do not alter the already-correct official URL.
-text = text.replace('href="https://youtube.com/@kartikclarity"', 'href="https://youtube.com/@kartikclarityofficial"')
+text = text.replace('href="https://youtube.com/@kartikclarity"', 'href="https://youtube.com/@kartikclarity"')
 
 # Convert any existing Reddit icon placeholders into the supplied Reddit profile.
 reddit_pattern = re.compile(r'<span class="social-icon social-placeholder" aria-label="Reddit" title="Reddit">(.*?)</span>', re.S)
-reddit_replacement = r'<a class="social-icon reddit-link" href="https://www.reddit.com/user/Hungry-Lie-2220/" target="_blank" rel="noopener noreferrer" aria-label="Reddit" title="Reddit">\1</a>'
+reddit_replacement = r'<a class="social-icon reddit-link" href="https://www.reddit.com/u/KartikClarity/s/kIG9GDOa7p" target="_blank" rel="noopener noreferrer" aria-label="Reddit" title="Reddit">\1</a>'
 text, reddit_count = reddit_pattern.subn(reddit_replacement, text)
 
 # Add a mobile header Blog link if it is not already present.
@@ -37,7 +37,7 @@ if 'class="mobile-blog-link"' not in text:
 # group (header and footer) without touching the existing layout.
 reddit_bootstrap = r'''<script id="kartik-reddit-social-bootstrap">
 (function(){
-  var url='https://www.reddit.com/user/Hungry-Lie-2220/';
+  var url='https://www.reddit.com/u/KartikClarity/s/kIG9GDOa7p';
   var groups=document.querySelectorAll('.social-links');
   groups.forEach(function(group){
     if(group.querySelector('a.reddit-link')) return;
@@ -64,9 +64,9 @@ if 'id="kartik-reddit-social-bootstrap"' not in text:
 # The script must be safe to rerun when the links are already integrated.
 if not any(link in text for link in ('href="/blog/', 'href="blog/', "href='/blog/", "href='blog/")):
     raise SystemExit('Blog integration failed; no working blog link found.')
-if 'https://youtube.com/@kartikclarityofficial' not in text:
+if 'https://youtube.com/@kartikclarity' not in text:
     raise SystemExit('YouTube integration failed; official channel link not found.')
-if 'kartik-reddit-social-bootstrap' not in text or 'https://www.reddit.com/user/Hungry-Lie-2220/' not in text:
+if 'kartik-reddit-social-bootstrap' not in text or 'https://www.reddit.com/u/KartikClarity/s/kIG9GDOa7p' not in text:
     raise SystemExit('Reddit integration failed; refusing to finish.')
 
 path.write_text(text, encoding='utf-8')
