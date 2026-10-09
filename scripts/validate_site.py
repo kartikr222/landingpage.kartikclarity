@@ -2,6 +2,8 @@
 """Dependency-free regression checks for Kartik Clarity's static site."""
 from html.parser import HTMLParser
 from pathlib import Path
+import posixpath
+from urllib.parse import urlsplit
 import re
 import sys
 import xml.etree.ElementTree as ET
@@ -89,6 +91,28 @@ for path, expected in PAGES.items():
     check(p.meta.get("og:image") == BASE + "/cover-banner.png", f"{path}: Open Graph image mismatch")
     check(p.meta.get("twitter:image") == BASE + "/cover-banner.png", f"{path}: Twitter image mismatch")
     check(p.meta.get("twitter:card") == "summary_large_image", f"{path}: Twitter card type mismatch")
+
+# Check local links and image alt text on every indexable page.
+for path in PAGES:
+    p = parse(path)
+    check(all(bool(img.get("alt", "").strip()) for img in p.images),
+          f"{path}: image missing meaningful alt text")
+    for _, href in p.links:
+        if not href or href.startswith("#"):
+            continue
+        parsed = urlsplit(href)
+        if parsed.scheme or parsed.netloc:
+            continue
+        target = parsed.path
+        if not target:
+            target = path
+        elif target.startswith("/"):
+            target = target.lstrip("/")
+        else:
+            target = posixpath.normpath(posixpath.join(posixpath.dirname(path), target))
+        if parsed.path.endswith("/") or target in ("", "."):
+            target = posixpath.join(target if target not in ("", ".") else "", "index.html")
+        check((ROOT / target).is_file(), f"{path}: broken internal link: {href}")
 
 home = parse("index.html")
 check(bool(home.images), "Homepage has no images")
