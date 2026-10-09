@@ -489,9 +489,12 @@
   .footer-social .social-links{flex-wrap:wrap;gap:9px}
   .footer-social .social-icon{width:38px;height:38px;flex-basis:38px}
 }
+.skip-link{position:fixed;z-index:9999;top:8px;left:8px;transform:translateY(-160%);padding:12px 16px;background:#fff;color:#0B1E33;border:2px solid #0B1E33;border-radius:6px;font-weight:700;text-decoration:none}.skip-link:focus{transform:translateY(0)}
 </style>
+<meta property="og:image:alt" content="Kartik Clarity™ revenue leak diagnostics">
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
 
 <header>
   <div class="wrap header-inner">
@@ -534,6 +537,8 @@
     <button class="header-cta" style="width:100%;margin-top:6px;" onclick="closeMobileNav();document.getElementById('assessment').scrollIntoView()">Take the Assessment</button>
   </div>
 </header>
+<main id="main-content" tabindex="-1">
+
 
 <section class="hero" id="top">
   <div class="wrap hero-grid">
@@ -848,6 +853,8 @@
   </div>
 </section>
 
+
+</main>
 <footer>
   <div class="wrap">
     <div class="footer-social"><div class="foot-col"><h4>Connect</h4><div class="social-links" aria-label="Social links">
