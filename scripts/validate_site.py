@@ -12,6 +12,7 @@ PAGES = {
     "index.html": BASE + "/",
     "about.html": BASE + "/about.html",
     "contact.html": BASE + "/contact.html",
+    "services.html": BASE + "/services.html",
     "privacy-policy.html": BASE + "/privacy-policy.html",
     "terms-of-service.html": BASE + "/terms-of-service.html",
     "blog/index.html": BASE + "/blog/",
