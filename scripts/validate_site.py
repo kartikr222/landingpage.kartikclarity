@@ -110,6 +110,15 @@ check(not re.search(r'<span class="social-icon social-placeholder"', home_html),
 for url in social_targets.values():
     check(url in home_html, f"Homepage social schema/link missing: {url}")
 check("kartik-reddit-social-bootstrap" in home_html, "Homepage Reddit social integration missing")
+integration_script = (ROOT / "scripts/integrate_blog.py").read_text(encoding="utf-8")
+check("https://youtube.com/@kartikclarity" in integration_script,
+      "Blog integration script missing canonical YouTube URL")
+check("https://www.reddit.com/u/KartikClarity/s/kIG9GDOa7p" in integration_script,
+      "Blog integration script missing canonical Reddit URL")
+check("https://youtube.com/@kartikclarityofficial" not in integration_script,
+      "Blog integration script contains obsolete YouTube URL")
+check("https://www.reddit.com/user/Hungry-Lie-2220/" not in integration_script,
+      "Blog integration script contains obsolete Reddit URL")
 for event in EVENTS: check(event in home_html, f"Homepage GA4 event missing: {event}")
 check(not re.search(r"gtag\(\s*['\"]event['\"]\s*,\s*['\"]purchase['\"]", home_html, re.I),
       "Checkout click must not be tracked as a purchase")
