@@ -100,9 +100,10 @@ check(all(img.get("decoding") == "async" for img in home.images),
       "Homepage images should use async decoding")
 check(all(img.get("loading") == "lazy" for img in home.images[1:]),
       "Below-the-fold homepage images should lazy-load")
-check('id="faq"' in home_html and "toggleFaq" in home_html,
+check('id="faq"' in (ROOT / "index.html").read_text(encoding="utf-8") and
+      "toggleFaq" in (ROOT / "index.html").read_text(encoding="utf-8"),
       "Homepage FAQ section or interaction missing")
-check(bool(re.search(r'<button[^>]*class="btn-primary"|<a[^>]*class="btn-primary"', home_html)),
+check(bool(re.search(r'<button[^>]*class="btn-primary"|<a[^>]*class="btn-primary"', (ROOT / "index.html").read_text(encoding="utf-8"))),
       "Homepage primary CTA missing")
 check("main-content" in home.mains and "main-content" in home.ids, "Homepage main landmark/skip target missing")
 check("main-content" in home.skips, "Homepage skip link target incorrect")
