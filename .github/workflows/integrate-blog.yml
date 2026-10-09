@@ -21,6 +21,13 @@ jobs:
       - name: Integrate Blog links into existing header and footer
         run: python scripts/integrate_blog.py
 
+      - name: Verify blog integration idempotency
+        run: |
+          git diff -- index.html > /tmp/index-before-second-integration.diff
+          python scripts/integrate_blog.py
+          git diff -- index.html > /tmp/index-after-second-integration.diff
+          diff -u /tmp/index-before-second-integration.diff /tmp/index-after-second-integration.diff
+
       - name: Validate SEO, analytics, sitemap and accessibility invariants
         run: python scripts/validate_site.py
 
