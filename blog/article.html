@@ -17,4 +17,37 @@ const posts={
 'revenue-leak-detection':{category:'Pipeline Architecture',title:'Revenue Leak Detection: Where Pipeline Value Quietly Disappears',excerpt:'Pipeline leakage rarely announces itself as a single failed deal. It appears in the gaps between stages, people and decisions.',date:'September 27, 2026',read:'5 min read',heads:[['The five leakage moments','moments'],['Why handoffs matter','handoffs'],['Prioritize by economic impact','impact'],['Build the feedback loop','feedback']],body:`<p>Pipeline leakage is often invisible because every individual stage can appear busy. Leads are being generated. Calls are happening. Proposals are being sent. Yet expected revenue still fails to arrive.</p><h2 id="moments">The five leakage moments</h2><p>The source architecture identifies five revenue leak zones: Silent Zone, Trust Gap, Follow-Up Graveyard, Handoff Fracture and Renewal Blind Spot. Together they describe where buyer intent can weaken before the business notices.</p><ul><li><strong>Silent Zone:</strong> interested prospects become unresponsive without a useful recovery signal.</li><li><strong>Trust Gap:</strong> buyer confidence falls before the process catches it.</li><li><strong>Follow-Up Graveyard:</strong> a warm opportunity receives too little or too-late follow-up.</li><li><strong>Handoff Fracture:</strong> critical context is lost between selling and delivery.</li><li><strong>Renewal Blind Spot:</strong> risk becomes visible after the decision is effectively made.</li></ul><h2 id="handoffs">Why handoffs matter</h2><p>Every handoff creates a potential information loss. A buyer should not have to repeat the same problem, priority or expected outcome because ownership changed internally.</p><h2 id="impact">Prioritize by economic impact</h2><p>Not every leak deserves the same response. Rank issues by revenue at risk, frequency, recoverability and speed to intervention. Fix the leak that changes the economics first.</p><h2 id="feedback">Build the feedback loop</h2><p>A diagnostic should not end with a score. Connect the finding to a specific intervention, then verify whether the expected revenue behavior improved.</p>`},
 'data-driven-sales-culture':{category:'Executive Leadership',title:'Building a Data-Driven Sales Culture',excerpt:'A data-driven sales culture is not more dashboards. It is a shared language for evidence, decisions and accountability.',date:'September 27, 2026',read:'5 min read',heads:[['Replace opinion with definitions','definitions'],['Make signals visible','visible'],['Turn evidence into coaching','coaching'],['Create accountability without noise','accountability']],body:`<p>Sales cultures become difficult to manage when every person has a different definition of a qualified opportunity, a healthy pipeline or a stalled deal. Data becomes useful when the organization agrees on what the signals mean.</p><h2 id="definitions">Replace opinion with definitions</h2><p>Define the stages, exit criteria and key conversion events before debating performance. Shared definitions reduce the temptation to explain weak numbers with stories that cannot be tested.</p><h2 id="visible">Make signals visible</h2><p>Teams should be able to see the few signals that matter: movement, age, next action, buyer commitment, risk and economic impact. Visibility should make the next decision easier, not create another reporting burden.</p><h2 id="coaching">Turn evidence into coaching</h2><p>Use patterns from real opportunities to coach behavior. If follow-up decays after proposals, inspect the process. If deals stall at a specific handoff, inspect the handoff. Coach the mechanism, not just the outcome.</p><h2 id="accountability">Create accountability without noise</h2><p>Accountability works when ownership is explicit and the measurement is stable. A small set of trusted signals is more valuable than a large collection of metrics nobody acts on.</p>`}}
 const requestedSlug=new URLSearchParams(location.search).get('slug')||'revenue-intelligence-guide',slug=posts[requestedSlug]?requestedSlug:'revenue-intelligence-guide',p=posts[slug];document.title=p.title+' | Kartik Clarity™';document.getElementById('canonical').setAttribute('href','https://kartikclarity.vercel.app/blog/article.html?slug='+encodeURIComponent(slug));document.getElementById('desc').content=p.excerpt;document.getElementById('ogtitle').content=p.title;document.getElementById('ogdesc').content=p.excerpt;document.getElementById('category').textContent=p.category;document.getElementById('title').textContent=p.title;document.getElementById('excerpt').textContent=p.excerpt;document.getElementById('byline').textContent='Kartik Clarity™ · '+p.date+' · '+p.read;document.getElementById('content').innerHTML=p.body+`<div class="share"><a target="_blank" rel="noopener" href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(location.href)}">Share on LinkedIn</a><a target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?url=${encodeURIComponent(location.href)}&text=${encodeURIComponent(p.title)}">Share on X</a><button onclick="navigator.clipboard.writeText(location.href);this.textContent='Link copied'">Copy link</button></div><div class="related"><a href="?slug=revenue-intelligence-guide">Revenue Intelligence guide<small>Revenue Recovery</small></a><a href="?slug=revenue-leak-detection">Revenue Leak Detection<small>Pipeline Architecture</small></a><a href="?slug=data-driven-sales-culture">Data-Driven Sales Culture<small>Executive Leadership</small></a></div>`;document.getElementById('toc').innerHTML=p.heads.map(x=>`<a href="#${x[1]}">${x[0]}</a>`).join('');window.addEventListener('scroll',()=>{const d=document.documentElement;document.getElementById('progress').style.width=((d.scrollTop/(d.scrollHeight-d.clientHeight))*100)+'%' });
-</script></body></html>
+</script>
+<!-- Kartik Clarity GA4 action tracking: records clicks, not completed purchases or confirmed leads. -->
+<script>
+(function () {
+  function track(name, params) {
+    if (typeof window.gtag === "function") window.gtag("event", name, params);
+  }
+  document.addEventListener("click", function (event) {
+    var link = event.target && event.target.closest ? event.target.closest("a") : null;
+    if (!link) return;
+    var href = link.getAttribute("href") || "";
+    var label = (link.innerText || link.getAttribute("aria-label") || "").trim().replace(/\s+/g, " ").slice(0, 100);
+    if (href.indexOf("mailto:") === 0) {
+      track("contact_email_click", { link_text: label, page_path: window.location.pathname });
+      return;
+    }
+    if (link.hostname === "checkout.dodopayments.com") {
+      track("checkout_outbound_click", { link_text: label, page_path: window.location.pathname, payment_provider: "Dodo Payments" });
+      return;
+    }
+    if (link.hostname && link.hostname !== window.location.hostname && link.hostname !== "fonts.googleapis.com" && link.hostname !== "fonts.gstatic.com") {
+      track("outbound_link_click", { link_domain: link.hostname, link_text: label, page_path: window.location.pathname });
+      return;
+    }
+    if (/^(\.\/)?contact\.html([?#].*)?$/.test(href)) {
+      track("contact_page_click", { link_text: label, page_path: window.location.pathname });
+    }
+    if (href === "#products") {
+      track("product_section_click", { link_text: label, page_path: window.location.pathname });
+    }
+  }, true);
+})();
+</script>
+</body></html>
