@@ -81,5 +81,42 @@
   <p>Not sure which option fits? <a href="contact.html">Send a short, non-confidential inquiry</a> or learn about the <a href="about.html">diagnostic approach</a>.</p>
 </main>
 <footer class="foot">© 2026 Kartik Clarity™. All rights reserved. · <a href="privacy-policy.html">Privacy Policy</a><a href="terms-of-service.html">Terms of Service</a></footer>
+<!-- Kartik Clarity GA4 action tracking: click intent only; never a confirmed lead or purchase. -->
+<script>
+(function () {
+  if (window.__kcTrackingInit) return;
+  window.__kcTrackingInit = true;
+  function track(name, params) { if (typeof window.gtag === "function") window.gtag("event", name, params); }
+  function safeLabel(link) {
+    var value=(link.getAttribute("aria-label")||link.textContent||"").replace(/\s+/g," ").trim().slice(0,80);
+    if(!value||/@|mailto:/i.test(value)) return "Email link";
+    return value;
+  }
+  function resolveHref(href){try{return new URL(href,window.location.href);}catch(e){return null;}}
+  document.addEventListener("click",function(event){
+    var target=event.target,link=target&&target.closest?target.closest("a[href]"):null;
+    if(!link)return;
+    var href=link.getAttribute("href")||"",label=safeLabel(link),url=resolveHref(href);
+    if(!url)return;
+    if(/^mailto:/i.test(href)){track("contact_email_click",{link_text:"Email link",page_path:window.location.pathname});return;}
+    var sameOrigin=url.origin===window.location.origin;
+    if(/(^|\.)checkout\.dodopayments\.com$/i.test(url.hostname)){
+      track("checkout_outbound_click",{link_text:label,destination_host:url.hostname,page_path:window.location.pathname});return;
+    }
+    if(sameOrigin&&/(^|\/)contact\.html$/i.test(url.pathname)){
+      track("contact_page_click",{link_text:label,page_path:window.location.pathname});return;
+    }
+    if(sameOrigin&&url.hash==="#products"){
+      track("product_section_click",{link_text:label,page_path:window.location.pathname});return;
+    }
+    if(link.closest("#products")){
+      track("product_section_click",{link_text:label,page_path:window.location.pathname});return;
+    }
+    if(!sameOrigin&&url.protocol!=="mailto:"&&url.protocol!=="tel:"&&url.hostname!=="fonts.googleapis.com"&&url.hostname!=="fonts.gstatic.com"){
+      track("outbound_link_click",{destination_host:url.hostname,link_text:label,page_path:window.location.pathname});
+    }
+  },true);
+})();
+</script>
 </body>
 </html>
