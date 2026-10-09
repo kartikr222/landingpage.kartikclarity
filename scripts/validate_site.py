@@ -29,12 +29,13 @@ class Page(HTMLParser):
         super().__init__(convert_charrefs=True)
         self.meta, self.canonicals, self.ids = {}, [], set()
         self.h1, self.mains, self.skips, self.mailtos = 0, [], [], []
-        self.title, self.in_title, self.lang, self.links = [], False, None, []
+        self.title, self.in_title, self.lang, self.links, self.images = [], False, None, [], []
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
         if tag == "html": self.lang = a.get("lang")
         if tag == "title": self.in_title = True
         if tag == "h1": self.h1 += 1
+        if tag == "img": self.images.append(a)
         if tag == "main": self.mains.append(a.get("id", ""))
         if "id" in a: self.ids.add(a["id"])
         if tag == "meta":
@@ -89,6 +90,20 @@ for path, expected in PAGES.items():
     check(p.meta.get("twitter:card") == "summary_large_image", f"{path}: Twitter card type mismatch")
 
 home = parse("index.html")
+check(bool(home.images), "Homepage has no images")
+check(all(bool(img.get("alt", "").strip()) for img in home.images),
+      "Homepage image missing meaningful alt text")
+check(all(img.get("width", "").isdigit() and int(img.get("width", "0")) > 0 and
+          img.get("height", "").isdigit() and int(img.get("height", "0")) > 0
+          for img in home.images), "Homepage images missing intrinsic width/height")
+check(all(img.get("decoding") == "async" for img in home.images),
+      "Homepage images should use async decoding")
+check(all(img.get("loading") == "lazy" for img in home.images[1:]),
+      "Below-the-fold homepage images should lazy-load")
+check('id="faq"' in home_html and "toggleFaq" in home_html,
+      "Homepage FAQ section or interaction missing")
+check(bool(re.search(r'<button[^>]*class="btn-primary"|<a[^>]*class="btn-primary"', home_html)),
+      "Homepage primary CTA missing")
 check("main-content" in home.mains and "main-content" in home.ids, "Homepage main landmark/skip target missing")
 check("main-content" in home.skips, "Homepage skip link target incorrect")
 check(sum(1 for c, h in home.links if "blog-link" in c and h.rstrip("/") == "/blog") >= 2,
