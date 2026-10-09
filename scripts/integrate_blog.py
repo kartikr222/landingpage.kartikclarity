@@ -15,8 +15,6 @@ text, count = pattern.subn(replacement, text)
 youtube_pattern = re.compile(r'<span class="social-icon social-placeholder" aria-label="YouTube" title="YouTube">(.*?)</span>', re.S)
 youtube_replacement = r'<a class="social-icon youtube-link" href="https://youtube.com/@kartikclarity" target="_blank" rel="noopener noreferrer" aria-label="YouTube" title="YouTube">\1</a>'
 text, youtube_count = youtube_pattern.subn(youtube_replacement, text)
-# Normalize only the exact legacy channel URL; do not alter the already-correct official URL.
-text = text.replace('href="https://youtube.com/@kartikclarity"', 'href="https://youtube.com/@kartikclarity"')
 
 # Convert any existing Reddit icon placeholders into the supplied Reddit profile.
 reddit_pattern = re.compile(r'<span class="social-icon social-placeholder" aria-label="Reddit" title="Reddit">(.*?)</span>', re.S)
