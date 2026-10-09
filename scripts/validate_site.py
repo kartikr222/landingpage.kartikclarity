@@ -97,6 +97,15 @@ for path in PAGES:
     p = parse(path)
     check(all(bool(img.get("alt", "").strip()) for img in p.images),
           f"{path}: image missing meaningful alt text")
+    check(all(img.get("width", "").isdigit() and int(img.get("width", "0")) > 0 and
+              img.get("height", "").isdigit() and int(img.get("height", "0")) > 0
+              for img in p.images), f"{path}: image missing intrinsic width/height")
+    check(all(img.get("decoding") == "async" for img in p.images),
+          f"{path}: image missing async decoding")
+    if path.startswith("blog/"):
+        html = (ROOT / path).read_text(encoding="utf-8")
+        check("../logo-circle.jpeg" not in html,
+              f"{path}: blog page references oversized full-resolution logo")
     for _, href in p.links:
         if not href or href.startswith("#"):
             continue
