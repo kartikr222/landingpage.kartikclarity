@@ -7,6 +7,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: integrate-blog-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   integrate-blog:
     runs-on: ubuntu-latest
@@ -16,6 +20,12 @@ jobs:
 
       - name: Integrate Blog links into existing header and footer
         run: python scripts/integrate_blog.py
+
+      - name: Validate SEO, analytics, sitemap and accessibility invariants
+        run: python scripts/validate_site.py
+
+      - name: Check patch whitespace
+        run: git diff --check
 
       - name: Commit MVP navigation integration
         run: |
