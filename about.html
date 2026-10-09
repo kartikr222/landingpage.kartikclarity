@@ -63,5 +63,38 @@
   <a class="cta secondary" href="contact.html">Contact Kartik Clarity™</a>
 </main>
 <footer>© 2026 Kartik Clarity™ · <a href="privacy-policy.html">Privacy Policy</a> · <a href="terms-of-service.html">Terms of Service</a></footer>
+
+<!-- Kartik Clarity GA4 action tracking: records clicks, not completed purchases or confirmed leads. -->
+<script>
+(function () {
+  function track(name, params) {
+    if (typeof window.gtag === "function") window.gtag("event", name, params);
+  }
+  document.addEventListener("click", function (event) {
+    var link = event.target && event.target.closest ? event.target.closest("a") : null;
+    if (!link) return;
+    var href = link.getAttribute("href") || "";
+    var label = (link.innerText || link.getAttribute("aria-label") || "").trim().replace(/\s+/g, " ").slice(0, 100);
+    if (href.indexOf("mailto:") === 0) {
+      track("contact_email_click", { link_text: label, page_path: window.location.pathname });
+      return;
+    }
+    if (link.hostname === "checkout.dodopayments.com") {
+      track("checkout_outbound_click", { link_text: label, page_path: window.location.pathname, payment_provider: "Dodo Payments" });
+      return;
+    }
+    if (link.hostname && link.hostname !== window.location.hostname && link.hostname !== "fonts.googleapis.com" && link.hostname !== "fonts.gstatic.com") {
+      track("outbound_link_click", { link_domain: link.hostname, link_text: label, page_path: window.location.pathname });
+      return;
+    }
+    if (/^(\.\/)?contact\.html([?#].*)?$/.test(href)) {
+      track("contact_page_click", { link_text: label, page_path: window.location.pathname });
+    }
+    if (href === "#products") {
+      track("product_section_click", { link_text: label, page_path: window.location.pathname });
+    }
+  }, true);
+})();
+</script>
 </body>
 </html>
