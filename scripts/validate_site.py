@@ -93,9 +93,22 @@ check("main-content" in home.mains and "main-content" in home.ids, "Homepage mai
 check("main-content" in home.skips, "Homepage skip link target incorrect")
 check(sum(1 for c, h in home.links if "blog-link" in c and h.rstrip("/") == "/blog") >= 2,
       "Homepage header/footer Blog links missing")
-check(sum(1 for c, h in home.links if "youtube-link" in c and "youtube.com/@kartikclarityofficial" in h) >= 2,
-      "Homepage official YouTube links missing")
+social_targets = {
+    "linkedin": "https://www.linkedin.com/company/kartik-clarity/",
+    "youtube-link": "https://youtube.com/@kartikclarity",
+    "instagram-link": "https://www.instagram.com/kartik.clarity/",
+    "x-link": "https://x.com/kartikclarity",
+    "reddit-link": "https://www.reddit.com/u/KartikClarity/s/kIG9GDOa7p",
+    "discord-link": "https://discord.gg/Mp6T782e",
+}
+for cls, url in social_targets.items():
+    check(sum(1 for c, h in home.links if cls in c and h == url) >= 2,
+          f"Homepage social links missing or incorrect: {cls}")
 home_html = (ROOT / "index.html").read_text(encoding="utf-8")
+check(not re.search(r'<span class="social-icon social-placeholder"', home_html),
+      "Homepage has non-clickable social placeholders")
+for url in social_targets.values():
+    check(url in home_html, f"Homepage social schema/link missing: {url}")
 check("kartik-reddit-social-bootstrap" in home_html, "Homepage Reddit social integration missing")
 for event in EVENTS: check(event in home_html, f"Homepage GA4 event missing: {event}")
 check(not re.search(r"gtag\(\s*['\"]event['\"]\s*,\s*['\"]purchase['\"]", home_html, re.I),
