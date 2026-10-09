@@ -2,6 +2,8 @@
 """Dependency-free regression checks for Kartik Clarity's static site."""
 from html.parser import HTMLParser
 from pathlib import Path
+import posixpath
+from urllib.parse import urlsplit
 import re
 import sys
 import xml.etree.ElementTree as ET
@@ -12,6 +14,7 @@ PAGES = {
     "index.html": BASE + "/",
     "about.html": BASE + "/about.html",
     "contact.html": BASE + "/contact.html",
+    "services.html": BASE + "/services.html",
     "privacy-policy.html": BASE + "/privacy-policy.html",
     "terms-of-service.html": BASE + "/terms-of-service.html",
     "blog/index.html": BASE + "/blog/",
@@ -29,12 +32,13 @@ class Page(HTMLParser):
         super().__init__(convert_charrefs=True)
         self.meta, self.canonicals, self.ids = {}, [], set()
         self.h1, self.mains, self.skips, self.mailtos = 0, [], [], []
-        self.title, self.in_title, self.lang, self.links = [], False, None, []
+        self.title, self.in_title, self.lang, self.links, self.images = [], False, None, [], []
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
         if tag == "html": self.lang = a.get("lang")
         if tag == "title": self.in_title = True
         if tag == "h1": self.h1 += 1
+        if tag == "img": self.images.append(a)
         if tag == "main": self.mains.append(a.get("id", ""))
         if "id" in a: self.ids.add(a["id"])
         if tag == "meta":
@@ -88,7 +92,44 @@ for path, expected in PAGES.items():
     check(p.meta.get("twitter:image") == BASE + "/cover-banner.png", f"{path}: Twitter image mismatch")
     check(p.meta.get("twitter:card") == "summary_large_image", f"{path}: Twitter card type mismatch")
 
+# Check local links and image alt text on every indexable page.
+for path in PAGES:
+    p = parse(path)
+    check(all(bool(img.get("alt", "").strip()) for img in p.images),
+          f"{path}: image missing meaningful alt text")
+    for _, href in p.links:
+        if not href or href.startswith("#"):
+            continue
+        parsed = urlsplit(href)
+        if parsed.scheme or parsed.netloc:
+            continue
+        target = parsed.path
+        if not target:
+            target = path
+        elif target.startswith("/"):
+            target = target.lstrip("/")
+        else:
+            target = posixpath.normpath(posixpath.join(posixpath.dirname(path), target))
+        if parsed.path.endswith("/") or target in ("", "."):
+            target = posixpath.join(target if target not in ("", ".") else "", "index.html")
+        check((ROOT / target).is_file(), f"{path}: broken internal link: {href}")
+
 home = parse("index.html")
+check(bool(home.images), "Homepage has no images")
+check(all(bool(img.get("alt", "").strip()) for img in home.images),
+      "Homepage image missing meaningful alt text")
+check(all(img.get("width", "").isdigit() and int(img.get("width", "0")) > 0 and
+          img.get("height", "").isdigit() and int(img.get("height", "0")) > 0
+          for img in home.images), "Homepage images missing intrinsic width/height")
+check(all(img.get("decoding") == "async" for img in home.images),
+      "Homepage images should use async decoding")
+check(all(img.get("loading") == "lazy" for img in home.images[1:]),
+      "Below-the-fold homepage images should lazy-load")
+check('id="faq"' in (ROOT / "index.html").read_text(encoding="utf-8") and
+      "toggleFaq" in (ROOT / "index.html").read_text(encoding="utf-8"),
+      "Homepage FAQ section or interaction missing")
+check(bool(re.search(r'<button[^>]*class="btn-primary"|<a[^>]*class="btn-primary"', (ROOT / "index.html").read_text(encoding="utf-8"))),
+      "Homepage primary CTA missing")
 check("main-content" in home.mains and "main-content" in home.ids, "Homepage main landmark/skip target missing")
 check("main-content" in home.skips, "Homepage skip link target incorrect")
 check(sum(1 for c, h in home.links if "blog-link" in c and h.rstrip("/") == "/blog") >= 2,
