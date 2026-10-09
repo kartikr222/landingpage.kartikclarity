@@ -12,7 +12,7 @@
 </script>
 
 <title>Revenue Intelligence Blog | Kartik Clarity™</title>
-<meta name="description" content="Revenue Intelligence insights on revenue recovery, pipeline architecture, pricing and positioning, and executive leadership from Kartik Clarity™.">
+<meta name="description" content="Revenue Intelligence insights on revenue recovery, pipeline architecture, pricing and positioning, and executive leadership from Kartik Clarity™."><link rel="canonical" href="https://kartikclarity.vercel.app/blog/">
 <meta property="og:title" content="Revenue Intelligence Blog | Kartik Clarity™"><meta property="og:description" content="Strategy articles on finding and fixing revenue leaks."><meta property="og:type" content="website"><meta property="og:url" content="https://kartikclarity.vercel.app/blog/">
 <link rel="icon" href="../logo-circle.jpeg"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -24,45 +24,50 @@
 <section class="hero"><div class="wrap"><span class="eyebrow">Revenue Intelligence Blog</span><h1>Find the leaks before you add more growth.</h1><p>Strategy and operating insight across Revenue Recovery, Pipeline Architecture, Pricing &amp; Positioning, and Executive Leadership.</p></div></section>
 <section class="controls"><div class="wrap"><div class="control-row"><input id="search" class="search" type="search" placeholder="Search articles..." aria-label="Search articles"><button class="filter active" data-cat="all">All</button><button class="filter" data-cat="Revenue Recovery">Revenue Recovery</button><button class="filter" data-cat="Pipeline Architecture">Pipeline Architecture</button><button class="filter" data-cat="Pricing & Positioning">Pricing &amp; Positioning</button><button class="filter" data-cat="Executive Leadership">Executive Leadership</button></div></div></section>
 <main><div class="wrap">
-<div class="featured"><article class="feature-card" data-cat="Revenue Recovery" data-search="revenue intelligence revenue recovery diagnostic"><span class="feature-meta">Revenue Recovery · Featured</span><h2>Revenue Intelligence: See the System Behind the Number</h2><p>A practical starting point for treating revenue as an operating system - not a collection of disconnected funnel metrics.</p><a class="cta" href="article.html?slug=revenue-intelligence-guide">Read the guide</a></article><div class="feature-art"><img src="../logo-circle.jpeg" alt="Kartik Clarity™"></div></div>
+<div class="featured"><article class="feature-card" data-cat="Revenue Recovery" data-search="revenue intelligence revenue recovery diagnostic"><span class="feature-meta">Revenue Recovery · Featured</span><h2>Revenue Intelligence: See the System Behind the Number</h2><p>A practical starting point for treating revenue as an operating system - not a collection of disconnected funnel metrics.</p><a class="cta" href="revenue-intelligence-guide.html">Read the guide</a></article><div class="feature-art"><img src="../logo-circle.jpeg" alt="Kartik Clarity™"></div></div>
 <div id="grid" class="grid">
-<article class="post" data-cat="Pipeline Architecture" data-search="revenue leak detection pipeline architecture"><span class="meta">Pipeline Architecture</span><h3>Revenue Leak Detection: Where Pipeline Value Quietly Disappears</h3><p>Map the moments between interest, opportunity, proposal, close, and handoff where value can silently decay.</p><a class="read" href="article.html?slug=revenue-leak-detection">Read article →</a></article>
-<article class="post" data-cat="Executive Leadership" data-search="data driven sales culture executive leadership sales culture"><span class="meta">Executive Leadership</span><h3>Building a Data-Driven Sales Culture</h3><p>Move sales conversations from opinions and anecdotes toward shared evidence, operating definitions, and visible accountability.</p><a class="read" href="article.html?slug=data-driven-sales-culture">Read article →</a></article>
-<article class="post" data-cat="Pricing & Positioning" data-search="pricing positioning revenue leak"><span class="meta">Pricing &amp; Positioning</span><h3>Pricing &amp; Positioning as a Revenue Signal</h3><p>Use buyer clarity, price-to-value alignment, packaging, and friction as signals instead of waiting for lost deals to reveal them.</p><a class="read" href="article.html?slug=revenue-intelligence-guide">Explore the framework →</a></article>
+<article class="post" data-cat="Pipeline Architecture" data-search="revenue leak detection pipeline architecture"><span class="meta">Pipeline Architecture</span><h3>Revenue Leak Detection: Where Pipeline Value Quietly Disappears</h3><p>Map the moments between interest, opportunity, proposal, close, and handoff where value can silently decay.</p><a class="read" href="revenue-leak-detection.html">Read article →</a></article>
+<article class="post" data-cat="Executive Leadership" data-search="data driven sales culture executive leadership sales culture"><span class="meta">Executive Leadership</span><h3>Building a Data-Driven Sales Culture</h3><p>Move sales conversations from opinions and anecdotes toward shared evidence, operating definitions, and visible accountability.</p><a class="read" href="data-driven-sales-culture.html">Read article →</a></article>
+<article class="post" data-cat="Pricing & Positioning" data-search="pricing positioning revenue leak"><span class="meta">Pricing &amp; Positioning</span><h3>Pricing &amp; Positioning as a Revenue Signal</h3><p>Use buyer clarity, price-to-value alignment, packaging, and friction as signals instead of waiting for lost deals to reveal them.</p><a class="read" href="revenue-intelligence-guide.html#signals">Read the related section →</a></article>
 </div><div id="empty" class="empty">No matching articles. Try another search or category.</div>
 </div></main>
 <footer><div class="wrap foot"><span>© 2026 Kartik Clarity™. All rights reserved.</span><span><a href="../privacy-policy.html">Privacy</a> · <a href="../terms-of-service.html">Terms</a> · <a href="https://www.linkedin.com/company/kartik-clarity/?viewAsMember=true" target="_blank" rel="noopener">LinkedIn</a></span></div></footer>
 <script>const input=document.getElementById('search'),buttons=[...document.querySelectorAll('.filter')],items=[...document.querySelectorAll('[data-search]')],empty=document.getElementById('empty');let cat='all';function apply(){const q=input.value.trim().toLowerCase();let n=0;items.forEach(el=>{const okCat=cat==='all'||el.dataset.cat===cat;const okQ=!q||el.dataset.search.includes(q);const show=okCat&&okQ;el.style.display=show?'':'none';if(show)n++});empty.style.display=n?'none':'block'}buttons.forEach(b=>b.onclick=()=>{buttons.forEach(x=>x.classList.remove('active'));b.classList.add('active');cat=b.dataset.cat;apply()});input.oninput=apply;</script>
-<!-- Kartik Clarity GA4 action tracking: records clicks, not completed purchases or confirmed leads. -->
+<!-- Kartik Clarity GA4 action tracking: click intent only; never a confirmed lead or purchase. -->
 <script>
 (function () {
-  function track(name, params) {
-    if (typeof window.gtag === "function") window.gtag("event", name, params);
+  if (window.__kcTrackingInit) return;
+  window.__kcTrackingInit = true;
+  function track(name, params) { if (typeof window.gtag === "function") window.gtag("event", name, params); }
+  function safeLabel(link) {
+    var value=(link.getAttribute("aria-label")||link.textContent||"").replace(/\s+/g," ").trim().slice(0,80);
+    if(!value||/@|mailto:/i.test(value)) return "Email link";
+    return value;
   }
-  document.addEventListener("click", function (event) {
-    var link = event.target && event.target.closest ? event.target.closest("a") : null;
-    if (!link) return;
-    var href = link.getAttribute("href") || "";
-    var label = (link.innerText || link.getAttribute("aria-label") || "").trim().replace(/\s+/g, " ").slice(0, 100);
-    if (href.indexOf("mailto:") === 0) {
-      track("contact_email_click", { link_text: label, page_path: window.location.pathname });
-      return;
+  function resolveHref(href){try{return new URL(href,window.location.href);}catch(e){return null;}}
+  document.addEventListener("click",function(event){
+    var target=event.target,link=target&&target.closest?target.closest("a[href]"):null;
+    if(!link)return;
+    var href=link.getAttribute("href")||"",label=safeLabel(link),url=resolveHref(href);
+    if(!url)return;
+    if(/^mailto:/i.test(href)){track("contact_email_click",{link_text:"Email link",page_path:window.location.pathname});return;}
+    var sameOrigin=url.origin===window.location.origin;
+    if(/(^|\.)checkout\.dodopayments\.com$/i.test(url.hostname)){
+      track("checkout_outbound_click",{link_text:label,destination_host:url.hostname,page_path:window.location.pathname});return;
     }
-    if (link.hostname === "checkout.dodopayments.com") {
-      track("checkout_outbound_click", { link_text: label, page_path: window.location.pathname, payment_provider: "Dodo Payments" });
-      return;
+    if(sameOrigin&&/(^|\/)contact\.html$/i.test(url.pathname)){
+      track("contact_page_click",{link_text:label,page_path:window.location.pathname});return;
     }
-    if (link.hostname && link.hostname !== window.location.hostname && link.hostname !== "fonts.googleapis.com" && link.hostname !== "fonts.gstatic.com") {
-      track("outbound_link_click", { link_domain: link.hostname, link_text: label, page_path: window.location.pathname });
-      return;
+    if(sameOrigin&&url.hash==="#products"){
+      track("product_section_click",{link_text:label,page_path:window.location.pathname});return;
     }
-    if (/^(\.\/)?contact\.html([?#].*)?$/.test(href)) {
-      track("contact_page_click", { link_text: label, page_path: window.location.pathname });
+    if(link.closest("#products")){
+      track("product_section_click",{link_text:label,page_path:window.location.pathname});return;
     }
-    if (href === "#products") {
-      track("product_section_click", { link_text: label, page_path: window.location.pathname });
+    if(!sameOrigin&&url.protocol!=="mailto:"&&url.protocol!=="tel:"&&url.hostname!=="fonts.googleapis.com"&&url.hostname!=="fonts.gstatic.com"){
+      track("outbound_link_click",{destination_host:url.hostname,link_text:label,page_path:window.location.pathname});
     }
-  }, true);
+  },true);
 })();
 </script>
 </body></html>
