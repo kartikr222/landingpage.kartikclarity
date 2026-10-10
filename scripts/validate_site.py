@@ -198,6 +198,14 @@ check("https://www.reddit.com/user/Hungry-Lie-2220/" not in integration_script,
 for event in EVENTS: check(event in home_html, f"Homepage GA4 event missing: {event}")
 check(not re.search(r"gtag\(\s*['\"]event['\"]\s*,\s*['\"]purchase['\"]", home_html, re.I),
       "Checkout click must not be tracked as a purchase")
+checkout_ctas = [
+    href for classes, href, _attrs in home.links
+    if "ladder-cta" in classes and "checkout.dodopayments.com" in href
+]
+check(len(checkout_ctas) == 3,
+      "All three paid-offer CTAs must be real checkout links, not JS-only buttons")
+check("event_callback:continueToCheckout" in home_html and "event_timeout:1200" in home_html,
+      "Checkout-intent event should be given a bounded chance to dispatch before navigation")
 
 contact = parse("contact.html")
 check(any(x.startswith("mailto:info.kartikclarity@gmail.com") for x in contact.mailtos),
