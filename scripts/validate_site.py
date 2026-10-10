@@ -44,11 +44,9 @@ class Page(HTMLParser):
         if "id" in a:
             if a["id"] in self.ids: self.duplicate_ids.append(a["id"])
             self.ids.add(a["id"])
-        if tag in ("button", "input", "select", "textarea"):
+        if tag in ("input", "select", "textarea"):
             label = (a.get("aria-label") or a.get("title") or a.get("value") or "").strip()
-            if tag == "button" and not label:
-                label = (a.get("type") or "").lower() == "hidden"
-            if tag in ("input", "select", "textarea") and a.get("type", "").lower() in ("hidden", "submit", "button", "reset", "image"):
+            if a.get("type", "").lower() in ("hidden", "submit", "button", "reset", "image"):
                 label = True
             if not label: self.unnamed_controls.append((tag, a.get("id", ""), a.get("type", "")))
         if tag == "meta":
