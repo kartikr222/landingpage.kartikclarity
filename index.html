@@ -221,6 +221,7 @@
   @keyframes pulseDot{0%,100%{opacity:1;}50%{opacity:0.25;}}
   svg#waveform{width:100%;height:150px;display:block;}
   .leak-callouts{display:flex;flex-direction:column;gap:9px;margin-top:16px;}
+  .scanner-note{font-size:11px;line-height:1.5;color:#93a0bd;margin:10px 0 0;}
   .leak-row{
     display:flex;justify-content:space-between;align-items:center;
     background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);
@@ -330,7 +331,8 @@
   .ladder-card li{font-size:13.5px;color:var(--slate);padding:7px 0;border-top:1px solid var(--hairline);}
   .ladder-card.featured li{color:#dfe6f5;border-top:1px solid rgba(255,255,255,0.12);}
   .ladder-cta{
-    margin-top:22px;text-align:center;padding:13px;border-radius:8px;font-weight:600;font-size:14px;
+    display:inline-block;width:100%;margin-top:22px;text-align:center;padding:13px;border-radius:8px;
+    font-family:inherit;font-weight:600;font-size:14px;text-decoration:none;cursor:pointer;
     background:var(--navy-950);color:var(--white);border:none;
   }
   .ladder-card.featured .ladder-cta{background:var(--cyan-400);color:var(--navy-950);}
@@ -552,8 +554,8 @@
     <div>
       <span class="eyebrow-tag">Revenue Leak Detection</span>
       <h1>Your revenue problem isn't a growth problem.<br>It's a <em>leak</em> problem.</h1>
-      <p class="lede">Most B2B SaaS companies between $5M and $50M in annual recurring revenue (ARR) aren't losing deals because of bad marketing. They're losing them quietly, in the gaps between systems, teams, and follow-up. Revenue Leak Architecture™ finds those gaps before you spend another dollar trying to outrun them.</p>
-      <p class="stakes">Every quarter it stays unmeasured, the same pattern repeats next quarter.</p>
+      <p class="lede">For B2B SaaS teams between $5M and $50M in annual recurring revenue (ARR), revenue friction can hide in the gaps between systems, teams, and follow-up, not just at the top of the funnel. Revenue Leak Architecture™ helps identify those gaps before another growth initiative is added.</p>
+      <p class="stakes">Unmeasured revenue friction can repeat quarter after quarter.</p>
       <div class="hero-ctas">
         <button class="btn-primary" onclick="document.getElementById('assessment').scrollIntoView()">Run My Revenue Leak Score</button>
         <button class="btn-secondary" onclick="document.getElementById('framework').scrollIntoView()">See the Framework</button>
@@ -567,7 +569,7 @@
     </div>
     <div class="scanner-card">
       <div class="scanner-head">
-        <span class="title"><span class="dot"></span>Live Leak Scan</span>
+        <span class="title"><span class="dot"></span>Illustrative Leak Scan</span>
         <span class="title mono">funnel.trace</span>
       </div>
       <svg id="waveform" viewBox="0 0 460 150" preserveAspectRatio="none"></svg>
@@ -576,19 +578,20 @@
         <div class="leak-row"><span class="zone">Follow-Up Graveyard</span><span class="amt">−$268K</span></div>
         <div class="leak-row"><span class="zone">Handoff Fracture</span><span class="amt">−$95K</span></div>
       </div>
+      <p class="scanner-note">Illustrative sample values only. Not customer data, a diagnosis, or a forecast.</p>
     </div>
   </div>
 </section>
 
 <div class="trust">
   <div class="wrap">
-    <p>Leak patterns diagnosed across sales, marketing, CRM, proposals, follow-up, onboarding, and renewal, for founder-led B2B companies in the US, Canada, and UAE.</p>
+    <p>Framework coverage across pipeline, sales conversations, follow-up, handoffs, onboarding, renewal and expansion for B2B SaaS teams in the US, Canada, and UAE.</p>
     <div class="chips">
-      <span class="chip">SaaS</span>
-      <span class="chip">Agencies</span>
-      <span class="chip">Professional Services</span>
-      <span class="chip">Construction</span>
-      <span class="chip">Real Estate</span>
+      <span class="chip">B2B SaaS</span>
+      <span class="chip">Pipeline</span>
+      <span class="chip">Follow-Up</span>
+      <span class="chip">Handoffs</span>
+      <span class="chip">Retention</span>
     </div>
   </div>
 </div>
@@ -626,7 +629,7 @@
     <div class="section-head fade-in">
       <span class="eyebrow">The framework</span>
       <h2>Revenue Leak Architecture™</h2>
-      <p>A map of the five places revenue quietly disappears in a founder-led business. Most companies are leaking in two or three of these at once, without a way to see it.</p>
+      <p>A map of five areas where revenue friction can occur in a founder-led business. More than one zone can be involved; the available evidence determines which ones are present and worth prioritizing.</p>
     </div>
     <div class="zones fade-in">
       <div class="zone-card">
@@ -739,7 +742,7 @@
           <li>Worksheet for all five leak zones</li>
           <li>Plain-language scoring guide</li>
         </ul>
-        <button class="ladder-cta" onclick="window.location.href='https://checkout.dodopayments.com/buy/pdt_0NkHko9xlk0DIWbFwS6JW?quantity=1'">Get the Workbook</button>
+        <a class="ladder-cta" href="https://checkout.dodopayments.com/buy/pdt_0NkHko9xlk0DIWbFwS6JW?quantity=1">Get the Workbook</a>
       </div>
       <div class="ladder-card featured">
         <span class="ladder-step">Step 2 · Fix it yourself</span>
@@ -751,7 +754,7 @@
           <li>Follow-up and handoff templates</li>
           <li>Renewal early-warning checklist</li>
         </ul>
-        <button class="ladder-cta" onclick="window.location.href='https://checkout.dodopayments.com/buy/pdt_0NjVf5fEPgLfkgNwoiIYV?quantity=1'">Get the Toolkit</button>
+        <a class="ladder-cta" href="https://checkout.dodopayments.com/buy/pdt_0NjVf5fEPgLfkgNwoiIYV?quantity=1">Get the Toolkit</a>
       </div>
       <div class="ladder-card">
         <span class="ladder-step">Step 3 · Have it done with you</span>
@@ -763,7 +766,7 @@
           <li>Prioritized fix roadmap</li>
           <li>Direct working sessions with Kartik</li>
         </ul>
-        <button class="ladder-cta" onclick="window.location.href='https://checkout.dodopayments.com/buy/pdt_0NkHn2rkuFUnWY0xyyT8c?quantity=1'">Apply for the Audit</button>
+        <a class="ladder-cta" href="https://checkout.dodopayments.com/buy/pdt_0NkHn2rkuFUnWY0xyyT8c?quantity=1">Apply for the Audit</a>
       </div>
     </div>
     <div class="ladder-connector fade-in">SEE THE PATTERN → FIX IT YOURSELF → OR HAVE US FIX IT WITH YOU</div>
@@ -1235,7 +1238,28 @@
     if(/^mailto:/i.test(href)){track("contact_email_click",{link_text:"Email link",page_path:window.location.pathname});return;}
     var sameOrigin=url.origin===window.location.origin;
     if(/(^|\.)checkout\.dodopayments\.com$/i.test(url.hostname)){
-      track("checkout_outbound_click",{link_text:label,destination_host:url.hostname,page_path:window.location.pathname});return;
+      // This records checkout intent only, never a completed purchase. Delay navigation
+      // briefly so GA4 has a chance to dispatch the event; always fall back if blocked.
+      event.preventDefault();
+      var destination=url.href,navigated=false;
+      function continueToCheckout(){
+        if(navigated)return;
+        navigated=true;
+        window.location.href=destination;
+      }
+      if(typeof window.gtag==="function"){
+        window.gtag("event","checkout_outbound_click",{
+          link_text:label,
+          destination_host:url.hostname,
+          page_path:window.location.pathname,
+          event_callback:continueToCheckout,
+          event_timeout:1200
+        });
+        window.setTimeout(continueToCheckout,1400);
+      } else {
+        continueToCheckout();
+      }
+      return;
     }
     if(sameOrigin&&/(^|\/)contact\.html$/i.test(url.pathname)){
       track("contact_page_click",{link_text:label,page_path:window.location.pathname});return;
