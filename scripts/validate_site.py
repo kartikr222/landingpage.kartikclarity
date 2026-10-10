@@ -3,6 +3,7 @@
 from html.parser import HTMLParser
 from pathlib import Path
 import posixpath
+import json
 from urllib.parse import urlsplit
 import re
 import sys
@@ -30,9 +31,10 @@ checks = 0
 class Page(HTMLParser):
     def __init__(self):
         super().__init__(convert_charrefs=True)
-        self.meta, self.canonicals, self.ids = {}, [], set()
+        self.meta, self.canonicals, self.ids, self.duplicate_ids = {}, [], set(), []
         self.h1, self.mains, self.skips, self.mailtos = 0, [], [], []
         self.title, self.in_title, self.lang, self.links, self.images = [], False, None, [], []
+        self.unnamed_controls, self.unsafe_blank_links = [], []
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
         if tag == "html": self.lang = a.get("lang")
@@ -40,7 +42,14 @@ class Page(HTMLParser):
         if tag == "h1": self.h1 += 1
         if tag == "img": self.images.append(a)
         if tag == "main": self.mains.append(a.get("id", ""))
-        if "id" in a: self.ids.add(a["id"])
+        if "id" in a:
+            if a["id"] in self.ids: self.duplicate_ids.append(a["id"])
+            self.ids.add(a["id"])
+        if tag in ("input", "select", "textarea"):
+            label = (a.get("aria-label") or a.get("title") or a.get("value") or "").strip()
+            if a.get("type", "").lower() in ("hidden", "submit", "button", "reset", "image"):
+                label = True
+            if not label: self.unnamed_controls.append((tag, a.get("id", ""), a.get("type", "")))
         if tag == "meta":
             key = (a.get("name") or a.get("property") or "").lower()
             if key: self.meta[key] = a.get("content", "")
@@ -48,7 +57,9 @@ class Page(HTMLParser):
             self.canonicals.append(a.get("href", ""))
         if tag == "a":
             href, classes = a.get("href", ""), (a.get("class") or "").split()
-            self.links.append((classes, href))
+            self.links.append((classes, href, a))
+            if a.get("target", "").lower() == "_blank" and not {"noopener", "noreferrer"}.issubset(set((a.get("rel") or "").lower().split())):
+                self.unsafe_blank_links.append(href)
             if "skip-link" in classes and href.startswith("#"): self.skips.append(href[1:])
             if href.lower().startswith("mailto:"): self.mailtos.append(href.lower())
     def handle_endtag(self, tag):
@@ -82,8 +93,15 @@ for path, expected in PAGES.items():
     titles.add(title); canonicals.add(canonical)
     check(p.lang == "en", f"{path}: html lang missing/incorrect")
     check(p.h1 == 1, f"{path}: expected exactly one H1")
+    check(not p.duplicate_ids, f"{path}: duplicate HTML id(s): {sorted(set(p.duplicate_ids))}")
+    check(not p.unnamed_controls, f"{path}: form/control elements missing accessible names: {p.unnamed_controls[:8]}")
+    check(not p.unsafe_blank_links, f"{path}: target=_blank links missing noopener+noreferrer: {p.unsafe_blank_links[:8]}")
     check(html.count("googletagmanager.com/gtag/js") == 1, f"{path}: expected one GA4 loader")
     check(len(re.findall(r"gtag\(\s*['\"]config['\"]", html)) == 1, f"{path}: expected one GA4 config")
+    check(html.count("googletagmanager.com/gtag/js?id=G-BY49FRSS66") == 1,
+          f"{path}: GA4 loader must use the configured measurement ID")
+    check(len(re.findall(r"gtag\(\s*['\"]config['\"]\s*,\s*['\"]G-BY49FRSS66['\"]", html)) == 1,
+          f"{path}: GA4 config must use the configured measurement ID")
     for key in ("og:title", "og:description", "og:url", "og:image", "og:image:alt",
                 "twitter:card", "twitter:title", "twitter:description", "twitter:image"):
         check(bool(p.meta.get(key, "").strip()), f"{path}: {key} missing")
@@ -106,7 +124,7 @@ for path in PAGES:
         html = (ROOT / path).read_text(encoding="utf-8")
         check("../logo-circle.jpeg" not in html,
               f"{path}: blog page references oversized full-resolution logo")
-    for _, href in p.links:
+    for _, href, _attrs in p.links:
         if not href or href.startswith("#"):
             continue
         parsed = urlsplit(href)
@@ -141,7 +159,7 @@ check(bool(re.search(r'<button[^>]*class="btn-primary"|<a[^>]*class="btn-primary
       "Homepage primary CTA missing")
 check("main-content" in home.mains and "main-content" in home.ids, "Homepage main landmark/skip target missing")
 check("main-content" in home.skips, "Homepage skip link target incorrect")
-check(sum(1 for c, h in home.links if "blog-link" in c and h.rstrip("/") == "/blog") >= 2,
+check(sum(1 for c, h, _attrs in home.links if "blog-link" in c and h.rstrip("/") == "/blog") >= 2,
       "Homepage header/footer Blog links missing")
 social_targets = {
     "linkedin": "https://www.linkedin.com/company/kartik-clarity/",
@@ -152,7 +170,7 @@ social_targets = {
     "discord-link": "https://discord.gg/Mp6T782e",
 }
 for cls, url in social_targets.items():
-    check(sum(1 for c, h in home.links if cls in c and h == url) >= 2,
+    check(sum(1 for c, h, _attrs in home.links if cls in c and h == url) >= 2,
           f"Homepage social links missing or incorrect: {cls}")
 home_html = (ROOT / "index.html").read_text(encoding="utf-8")
 check(not re.search(r'<span class="social-icon social-placeholder"', home_html),
@@ -182,6 +200,43 @@ check(legacy.meta.get("robots", "").lower() == "noindex,follow", "Legacy JS arti
 check(not legacy.canonicals, "Legacy JS article template has misleading static canonical")
 check("if(canonical)canonical.setAttribute" in legacy_html, "Legacy article canonical update is not guarded")
 
+# Validate the blog feed and dedicated blog sitemap, not just the root sitemap.
+blog_urls = {
+    BASE + "/blog/",
+    BASE + "/blog/revenue-intelligence-guide.html",
+    BASE + "/blog/revenue-leak-detection.html",
+    BASE + "/blog/data-driven-sales-culture.html",
+}
+try:
+    blog_tree = ET.parse(ROOT / "blog/sitemap.xml")
+    blog_sitemap_urls = {
+        n.text.strip() for n in blog_tree.iter()
+        if n.tag.endswith("loc") and n.text and n.text.strip()
+    }
+    check(blog_sitemap_urls == blog_urls, "Blog sitemap is invalid or does not match the published blog URLs")
+except Exception as exc:
+    check(False, f"Blog sitemap XML invalid: {exc}")
+
+try:
+    rss_tree = ET.parse(ROOT / "blog/rss.xml")
+    channel = rss_tree.find("./channel")
+    check(channel is not None, "RSS feed is missing its channel")
+    if channel is not None:
+        check((channel.findtext("link") or "").strip() == BASE + "/blog/",
+              "RSS channel link is missing or incorrect")
+        rss_urls = {
+            (item.findtext("link") or "").strip()
+            for item in channel.findall("item")
+        }
+        check(rss_urls == blog_urls - {BASE + "/blog/"},
+              "RSS items do not match the published blog articles")
+except Exception as exc:
+    check(False, f"RSS feed XML invalid: {exc}")
+blog_index_html = (ROOT / "blog/index.html").read_text(encoding="utf-8")
+check('rel="alternate" type="application/rss+xml"' in blog_index_html and
+      'href="rss.xml"' in blog_index_html,
+      "Blog index does not advertise its RSS feed")
+
 try:
     tree = ET.parse(ROOT / "sitemap.xml")
     urls = {n.text.strip() for n in tree.iter() if n.tag.endswith("loc") and n.text}
@@ -191,6 +246,28 @@ except Exception as exc:
 check("Sitemap: " + BASE + "/sitemap.xml" in (ROOT / "robots.txt").read_text(encoding="utf-8"),
       "robots.txt sitemap declaration missing")
 check((ROOT / "cover-banner.png").is_file(), "Social preview image asset missing")
+# Confirm Vercel applies the baseline browser security headers site-wide.
+try:
+    vercel_config = json.loads((ROOT / "vercel.json").read_text(encoding="utf-8"))
+    rules = vercel_config.get("headers", [])
+    site_rule = next((rule for rule in rules if rule.get("source") == "/(.*)"), None)
+    check(site_rule is not None, "Vercel config lacks a site-wide security-header rule")
+    configured = {
+        h.get("key", "").lower(): h.get("value", "")
+        for h in (site_rule or {}).get("headers", [])
+    }
+    required_headers = {
+        "x-content-type-options": "nosniff",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "x-frame-options": "DENY",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+    }
+    for key, value in required_headers.items():
+        check(configured.get(key) == value,
+              f"Vercel security header missing or incorrect: {key}")
+except Exception as exc:
+    check(False, f"Vercel security-header config invalid: {exc}")
+
 workflow = (ROOT / ".github/workflows/integrate-blog.yml").read_text(encoding="utf-8")
 check("concurrency:" in workflow, "Blog integration workflow lacks concurrency protection")
 check("python scripts/validate_site.py" in workflow, "Blog integration workflow does not run validation")
