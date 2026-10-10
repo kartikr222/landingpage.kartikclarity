@@ -171,7 +171,7 @@ social_targets = {
     "discord-link": "https://discord.gg/Mp6T782e",
 }
 for cls, url in social_targets.items():
-    check(sum(1 for c, h in home.links if cls in c and h == url) >= 2,
+    check(sum(1 for c, h, _attrs in home.links if cls in c and h == url) >= 2,
           f"Homepage social links missing or incorrect: {cls}")
 home_html = (ROOT / "index.html").read_text(encoding="utf-8")
 check(not re.search(r'<span class="social-icon social-placeholder"', home_html),
