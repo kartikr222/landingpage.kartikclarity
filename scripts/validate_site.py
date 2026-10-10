@@ -199,6 +199,43 @@ check(legacy.meta.get("robots", "").lower() == "noindex,follow", "Legacy JS arti
 check(not legacy.canonicals, "Legacy JS article template has misleading static canonical")
 check("if(canonical)canonical.setAttribute" in legacy_html, "Legacy article canonical update is not guarded")
 
+# Validate the blog feed and dedicated blog sitemap, not just the root sitemap.
+blog_urls = {
+    BASE + "/blog/",
+    BASE + "/blog/revenue-intelligence-guide.html",
+    BASE + "/blog/revenue-leak-detection.html",
+    BASE + "/blog/data-driven-sales-culture.html",
+}
+try:
+    blog_tree = ET.parse(ROOT / "blog/sitemap.xml")
+    blog_sitemap_urls = {
+        n.text.strip() for n in blog_tree.iter()
+        if n.tag.endswith("loc") and n.text and n.text.strip()
+    }
+    check(blog_sitemap_urls == blog_urls, "Blog sitemap is invalid or does not match the published blog URLs")
+except Exception as exc:
+    check(False, f"Blog sitemap XML invalid: {exc}")
+
+try:
+    rss_tree = ET.parse(ROOT / "blog/rss.xml")
+    channel = rss_tree.find("./channel")
+    check(channel is not None, "RSS feed is missing its channel")
+    if channel is not None:
+        check((channel.findtext("link") or "").strip() == BASE + "/blog/",
+              "RSS channel link is missing or incorrect")
+        rss_urls = {
+            (item.findtext("link") or "").strip()
+            for item in channel.findall("item")
+        }
+        check(rss_urls == blog_urls - {BASE + "/blog/"},
+              "RSS items do not match the published blog articles")
+except Exception as exc:
+    check(False, f"RSS feed XML invalid: {exc}")
+blog_index_html = (ROOT / "blog/index.html").read_text(encoding="utf-8")
+check('rel="alternate" type="application/rss+xml"' in blog_index_html and
+      'href="rss.xml"' in blog_index_html,
+      "Blog index does not advertise its RSS feed")
+
 try:
     tree = ET.parse(ROOT / "sitemap.xml")
     urls = {n.text.strip() for n in tree.iter() if n.tag.endswith("loc") and n.text}
