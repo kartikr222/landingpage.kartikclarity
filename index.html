@@ -330,7 +330,8 @@
   .ladder-card li{font-size:13.5px;color:var(--slate);padding:7px 0;border-top:1px solid var(--hairline);}
   .ladder-card.featured li{color:#dfe6f5;border-top:1px solid rgba(255,255,255,0.12);}
   .ladder-cta{
-    margin-top:22px;text-align:center;padding:13px;border-radius:8px;font-weight:600;font-size:14px;
+    display:inline-block;width:100%;margin-top:22px;text-align:center;padding:13px;border-radius:8px;
+    font-family:inherit;font-weight:600;font-size:14px;text-decoration:none;cursor:pointer;
     background:var(--navy-950);color:var(--white);border:none;
   }
   .ladder-card.featured .ladder-cta{background:var(--cyan-400);color:var(--navy-950);}
@@ -739,7 +740,7 @@
           <li>Worksheet for all five leak zones</li>
           <li>Plain-language scoring guide</li>
         </ul>
-        <button class="ladder-cta" onclick="window.location.href='https://checkout.dodopayments.com/buy/pdt_0NkHko9xlk0DIWbFwS6JW?quantity=1'">Get the Workbook</button>
+        <a class="ladder-cta" href="https://checkout.dodopayments.com/buy/pdt_0NkHko9xlk0DIWbFwS6JW?quantity=1">Get the Workbook</a>
       </div>
       <div class="ladder-card featured">
         <span class="ladder-step">Step 2 · Fix it yourself</span>
@@ -751,7 +752,7 @@
           <li>Follow-up and handoff templates</li>
           <li>Renewal early-warning checklist</li>
         </ul>
-        <button class="ladder-cta" onclick="window.location.href='https://checkout.dodopayments.com/buy/pdt_0NjVf5fEPgLfkgNwoiIYV?quantity=1'">Get the Toolkit</button>
+        <a class="ladder-cta" href="https://checkout.dodopayments.com/buy/pdt_0NjVf5fEPgLfkgNwoiIYV?quantity=1">Get the Toolkit</a>
       </div>
       <div class="ladder-card">
         <span class="ladder-step">Step 3 · Have it done with you</span>
@@ -763,7 +764,7 @@
           <li>Prioritized fix roadmap</li>
           <li>Direct working sessions with Kartik</li>
         </ul>
-        <button class="ladder-cta" onclick="window.location.href='https://checkout.dodopayments.com/buy/pdt_0NkHn2rkuFUnWY0xyyT8c?quantity=1'">Apply for the Audit</button>
+        <a class="ladder-cta" href="https://checkout.dodopayments.com/buy/pdt_0NkHn2rkuFUnWY0xyyT8c?quantity=1">Apply for the Audit</a>
       </div>
     </div>
     <div class="ladder-connector fade-in">SEE THE PATTERN → FIX IT YOURSELF → OR HAVE US FIX IT WITH YOU</div>
@@ -1234,8 +1235,29 @@
     if(!url)return;
     if(/^mailto:/i.test(href)){track("contact_email_click",{link_text:"Email link",page_path:window.location.pathname});return;}
     var sameOrigin=url.origin===window.location.origin;
-    if(/(^|\.)checkout\.dodopayments\.com$/i.test(url.hostname)){
-      track("checkout_outbound_click",{link_text:label,destination_host:url.hostname,page_path:window.location.pathname});return;
+    if(/(^|\\.)checkout\\.dodopayments\\.com$/i.test(url.hostname)){
+      // This records checkout intent only, never a completed purchase. Delay navigation
+      // briefly so GA4 has a chance to dispatch the event; always fall back if blocked.
+      event.preventDefault();
+      var destination=url.href,navigated=false;
+      function continueToCheckout(){
+        if(navigated)return;
+        navigated=true;
+        window.location.href=destination;
+      }
+      if(typeof window.gtag==="function"){
+        window.gtag("event","checkout_outbound_click",{
+          link_text:label,
+          destination_host:url.hostname,
+          page_path:window.location.pathname,
+          event_callback:continueToCheckout,
+          event_timeout:1200
+        });
+        window.setTimeout(continueToCheckout,1400);
+      } else {
+        continueToCheckout();
+      }
+      return;
     }
     if(sameOrigin&&/(^|\/)contact\.html$/i.test(url.pathname)){
       track("contact_page_click",{link_text:label,page_path:window.location.pathname});return;
