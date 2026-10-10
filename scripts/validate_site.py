@@ -84,6 +84,10 @@ for path, expected in PAGES.items():
     check(p.h1 == 1, f"{path}: expected exactly one H1")
     check(html.count("googletagmanager.com/gtag/js") == 1, f"{path}: expected one GA4 loader")
     check(len(re.findall(r"gtag\(\s*['\"]config['\"]", html)) == 1, f"{path}: expected one GA4 config")
+    check(html.count("googletagmanager.com/gtag/js?id=G-BY49FRSS66") == 1,
+          f"{path}: GA4 loader must use the configured measurement ID")
+    check(len(re.findall(r"gtag\(\s*['\"]config['\"]\s*,\s*['\"]G-BY49FRSS66['\"]", html)) == 1,
+          f"{path}: GA4 config must use the configured measurement ID")
     for key in ("og:title", "og:description", "og:url", "og:image", "og:image:alt",
                 "twitter:card", "twitter:title", "twitter:description", "twitter:image"):
         check(bool(p.meta.get(key, "").strip()), f"{path}: {key} missing")
