@@ -30,9 +30,10 @@ checks = 0
 class Page(HTMLParser):
     def __init__(self):
         super().__init__(convert_charrefs=True)
-        self.meta, self.canonicals, self.ids = {}, [], set()
+        self.meta, self.canonicals, self.ids, self.duplicate_ids = {}, [], set(), []
         self.h1, self.mains, self.skips, self.mailtos = 0, [], [], []
         self.title, self.in_title, self.lang, self.links, self.images = [], False, None, [], []
+        self.unnamed_controls, self.unsafe_blank_links = [], []
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
         if tag == "html": self.lang = a.get("lang")
@@ -40,7 +41,16 @@ class Page(HTMLParser):
         if tag == "h1": self.h1 += 1
         if tag == "img": self.images.append(a)
         if tag == "main": self.mains.append(a.get("id", ""))
-        if "id" in a: self.ids.add(a["id"])
+        if "id" in a:
+            if a["id"] in self.ids: self.duplicate_ids.append(a["id"])
+            self.ids.add(a["id"])
+        if tag in ("button", "input", "select", "textarea"):
+            label = (a.get("aria-label") or a.get("title") or a.get("value") or "").strip()
+            if tag == "button" and not label:
+                label = (a.get("type") or "").lower() == "hidden"
+            if tag in ("input", "select", "textarea") and a.get("type", "").lower() in ("hidden", "submit", "button", "reset", "image"):
+                label = True
+            if not label: self.unnamed_controls.append((tag, a.get("id", ""), a.get("type", ""))
         if tag == "meta":
             key = (a.get("name") or a.get("property") or "").lower()
             if key: self.meta[key] = a.get("content", "")
@@ -48,7 +58,9 @@ class Page(HTMLParser):
             self.canonicals.append(a.get("href", ""))
         if tag == "a":
             href, classes = a.get("href", ""), (a.get("class") or "").split()
-            self.links.append((classes, href))
+            self.links.append((classes, href, a))
+            if a.get("target", "").lower() == "_blank" and not {"noopener", "noreferrer"}.issubset(set((a.get("rel") or "").lower().split())):
+                self.unsafe_blank_links.append(href)
             if "skip-link" in classes and href.startswith("#"): self.skips.append(href[1:])
             if href.lower().startswith("mailto:"): self.mailtos.append(href.lower())
     def handle_endtag(self, tag):
@@ -82,6 +94,9 @@ for path, expected in PAGES.items():
     titles.add(title); canonicals.add(canonical)
     check(p.lang == "en", f"{path}: html lang missing/incorrect")
     check(p.h1 == 1, f"{path}: expected exactly one H1")
+    check(not p.duplicate_ids, f"{path}: duplicate HTML id(s): {sorted(set(p.duplicate_ids))}")
+    check(not p.unnamed_controls, f"{path}: form/control elements missing accessible names: {p.unnamed_controls[:8]}")
+    check(not p.unsafe_blank_links, f"{path}: target=_blank links missing noopener+noreferrer: {p.unsafe_blank_links[:8]}")
     check(html.count("googletagmanager.com/gtag/js") == 1, f"{path}: expected one GA4 loader")
     check(len(re.findall(r"gtag\(\s*['\"]config['\"]", html)) == 1, f"{path}: expected one GA4 config")
     check(html.count("googletagmanager.com/gtag/js?id=G-BY49FRSS66") == 1,
@@ -110,7 +125,7 @@ for path in PAGES:
         html = (ROOT / path).read_text(encoding="utf-8")
         check("../logo-circle.jpeg" not in html,
               f"{path}: blog page references oversized full-resolution logo")
-    for _, href in p.links:
+    for _, href, _attrs in p.links:
         if not href or href.startswith("#"):
             continue
         parsed = urlsplit(href)
@@ -145,7 +160,7 @@ check(bool(re.search(r'<button[^>]*class="btn-primary"|<a[^>]*class="btn-primary
       "Homepage primary CTA missing")
 check("main-content" in home.mains and "main-content" in home.ids, "Homepage main landmark/skip target missing")
 check("main-content" in home.skips, "Homepage skip link target incorrect")
-check(sum(1 for c, h in home.links if "blog-link" in c and h.rstrip("/") == "/blog") >= 2,
+check(sum(1 for c, h, _attrs in home.links if "blog-link" in c and h.rstrip("/") == "/blog") >= 2,
       "Homepage header/footer Blog links missing")
 social_targets = {
     "linkedin": "https://www.linkedin.com/company/kartik-clarity/",
