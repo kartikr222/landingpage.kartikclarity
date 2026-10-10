@@ -206,6 +206,8 @@ check(len(checkout_ctas) == 3,
       "All three paid-offer CTAs must be real checkout links, not JS-only buttons")
 check("event_callback:continueToCheckout" in home_html and "event_timeout:1200" in home_html,
       "Checkout-intent event should be given a bounded chance to dispatch before navigation")
+check(r"if(/(^|\.)checkout\.dodopayments\.com$/i.test(url.hostname))" in home_html,
+      "Checkout tracking must match the actual Dodo Payments hostname")
 
 contact = parse("contact.html")
 check(any(x.startswith("mailto:info.kartikclarity@gmail.com") for x in contact.mailtos),
