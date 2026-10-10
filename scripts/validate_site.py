@@ -50,7 +50,7 @@ class Page(HTMLParser):
                 label = (a.get("type") or "").lower() == "hidden"
             if tag in ("input", "select", "textarea") and a.get("type", "").lower() in ("hidden", "submit", "button", "reset", "image"):
                 label = True
-            if not label: self.unnamed_controls.append((tag, a.get("id", ""), a.get("type", ""))
+            if not label: self.unnamed_controls.append((tag, a.get("id", ""), a.get("type", "")))
         if tag == "meta":
             key = (a.get("name") or a.get("property") or "").lower()
             if key: self.meta[key] = a.get("content", "")
