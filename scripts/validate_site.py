@@ -214,10 +214,12 @@ check("Illustrative Leak Scan" in home_html and
       "Homepage sample figures must be clearly labelled illustrative, not live findings")
 check("More than one zone can be involved; the available evidence determines which ones are present and worth prioritizing." in home_html,
       "Homepage framework copy must not present an unsupported prevalence claim")
-for off_icp_sector in ("<span class=\\"chip\\">Agencies</span>",
-                       "<span class=\\"chip\\">Professional Services</span>",
-                       "<span class=\\"chip\\">Construction</span>",
-                       "<span class=\\"chip\\">Real Estate</span>"):
+for off_icp_sector in (
+    '<span class="chip">Agencies</span>',
+    '<span class="chip">Professional Services</span>',
+    '<span class="chip">Construction</span>',
+    '<span class="chip">Real Estate</span>',
+):
     check(off_icp_sector not in home_html,
           f"Homepage trust strip should not imply off-ICP sectors: {off_icp_sector}")
 
