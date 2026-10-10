@@ -173,6 +173,14 @@ for cls, url in social_targets.items():
     check(sum(1 for c, h, _attrs in home.links if cls in c and h == url) >= 2,
           f"Homepage social links missing or incorrect: {cls}")
 home_html = (ROOT / "index.html").read_text(encoding="utf-8")
+portrait_rule = re.search(r"\.why-photo img\s*\{([^}]*)\}", home_html)
+check(portrait_rule is not None and re.search(r"object-fit\s*:\s*contain\s*;", portrait_rule.group(1)),
+      "Founder portrait must preserve the full source image (object-fit: contain)")
+check(not (portrait_rule and re.search(r"object-fit\s*:\s*cover\s*;", portrait_rule.group(1))),
+      "Founder portrait must not use cropping object-fit: cover")
+impact_tag = '<meta name="impact-site-verification" value="442a2d2a-a0d1-4806-b386-c89012e4b68e">'
+check(home_html.count(impact_tag) == 1,
+      "Impact.com verification tag must appear exactly once with the configured token")
 check(not re.search(r'<span class="social-icon social-placeholder"', home_html),
       "Homepage has non-clickable social placeholders")
 for url in social_targets.values():
