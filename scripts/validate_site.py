@@ -3,6 +3,7 @@
 from html.parser import HTMLParser
 from pathlib import Path
 import posixpath
+import json
 from urllib.parse import urlsplit
 import re
 import sys
@@ -245,6 +246,28 @@ except Exception as exc:
 check("Sitemap: " + BASE + "/sitemap.xml" in (ROOT / "robots.txt").read_text(encoding="utf-8"),
       "robots.txt sitemap declaration missing")
 check((ROOT / "cover-banner.png").is_file(), "Social preview image asset missing")
+# Confirm Vercel applies the baseline browser security headers site-wide.
+try:
+    vercel_config = json.loads((ROOT / "vercel.json").read_text(encoding="utf-8"))
+    rules = vercel_config.get("headers", [])
+    site_rule = next((rule for rule in rules if rule.get("source") == "/(.*)"), None)
+    check(site_rule is not None, "Vercel config lacks a site-wide security-header rule")
+    configured = {
+        h.get("key", "").lower(): h.get("value", "")
+        for h in (site_rule or {}).get("headers", [])
+    }
+    required_headers = {
+        "x-content-type-options": "nosniff",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "x-frame-options": "DENY",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+    }
+    for key, value in required_headers.items():
+        check(configured.get(key) == value,
+              f"Vercel security header missing or incorrect: {key}")
+except Exception as exc:
+    check(False, f"Vercel security-header config invalid: {exc}")
+
 workflow = (ROOT / ".github/workflows/integrate-blog.yml").read_text(encoding="utf-8")
 check("concurrency:" in workflow, "Blog integration workflow lacks concurrency protection")
 check("python scripts/validate_site.py" in workflow, "Blog integration workflow does not run validation")
