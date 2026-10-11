@@ -3,21 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>B2B Revenue Leak Audit &amp; Diagnostic Services | Kartik Clarity™</title>
-  <meta name="description" content="Evidence-led B2B SaaS revenue diagnostics, self-serve workbooks and executive revenue leak audits. Diagnose pipeline friction before prescribing another growth initiative.">
+  <title>Revenue Leak Diagnostic Services &amp; Executive Audit | Kartik Clarity™</title>
+  <meta name="description" content="Compare Kartik Clarity™ revenue diagnostics: the $19 workbook, $27 toolkit, $995 executive assessment and $9,500 executive audit. Evidence-led findings, clear scope and no guaranteed financial outcomes.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://kartikclarity.vercel.app/services.html">
   <link rel="icon" href="logo-circle.jpeg" type="image/jpeg">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Kartik Clarity™">
-  <meta property="og:title" content="B2B Revenue Leak Audit &amp; Diagnostic Services | Kartik Clarity™">
-  <meta property="og:description" content="Explore evidence-led revenue diagnostics, self-serve workbooks and an executive revenue leak audit.">
+  <meta property="og:title" content="Revenue Leak Diagnostic Services &amp; Executive Audit | Kartik Clarity™">
+  <meta property="og:description" content="Compare the $19 workbook, $27 toolkit, $995 executive assessment and $9,500 executive audit.">
   <meta property="og:url" content="https://kartikclarity.vercel.app/services.html">
   <meta property="og:image" content="https://kartikclarity.vercel.app/cover-banner.png">
   <meta property="og:image:alt" content="Kartik Clarity™ revenue leak diagnostics">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="B2B Revenue Leak Audit &amp; Diagnostic Services | Kartik Clarity™">
-  <meta name="twitter:description" content="Diagnose pipeline friction, follow-up gaps, handoff failures and retention blind spots with an evidence-led approach.">
+  <meta name="twitter:title" content="Revenue Leak Diagnostic Services &amp; Executive Audit | Kartik Clarity™">
+  <meta name="twitter:description" content="Compare evidence-led diagnostic offers from $19 to the $9,500 executive audit, including a $995 structured assessment.">
   <meta name="twitter:image" content="https://kartikclarity.vercel.app/cover-banner.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,13 +32,13 @@
   </style>
 </head>
 <body>
-<header><div class="nav"><a class="brand" href="index.html">Kartik Clarity™</a><nav class="nav-links" aria-label="Primary navigation"><a href="index.html">Home</a><a href="about.html">About</a><a href="contact.html">Contact</a><a href="blog/">Blog</a></nav></div></header>
+<header><div class="nav"><a class="brand" href="index.html">Kartik Clarity™</a><nav class="nav-links" aria-label="Primary navigation"><a href="index.html">Home</a><a href="services.html" aria-current="page">Services</a><a href="about.html">About</a><a href="contact.html">Contact</a><a href="blog/">Blog</a></nav></div></header>
 <main>
   <span class="eyebrow">Services and diagnostic products</span>
   <h1>Find the revenue leak before you prescribe another growth initiative.</h1>
   <p class="lede">Kartik Clarity™ helps B2B SaaS teams inspect pipeline friction, follow-up breakdowns, handoffs and retention blind spots. The approach is evidence-led: findings are separated into observed facts, hypotheses and unknowns.</p>
-  <div class="grid">
-    <section class="card featured">
+  <div class="grid" aria-label="Kartik Clarity offers">
+    <section class="card featured" id="executive-audit">
       <h2>Executive Revenue Leak Audit</h2>
       <div class="price">$9,500 · one-time</div>
       <p>A focused diagnostic for leadership teams that need a clearer view of where revenue execution may be breaking down before committing to another initiative.</p>
@@ -64,12 +64,26 @@
       <p>Practical templates and scripts to help teams investigate follow-up, trust, handoff and renewal friction with a consistent process.</p>
       <a class="cta" href="index.html#products">View toolkit</a>
     </section>
-    <section class="card">
-      <h2>Free diagnostic tools</h2>
-      <p>Use the available tools to inspect a narrow problem before deciding whether a deeper audit is warranted. Sample data is illustrative and is not a customer case study.</p>
-      <a class="cta" href="index.html#assessment">Start with the free assessment</a>
+    <section class="card" id="executive-assessment">
+      <h2>Executive Revenue Leak Assessment</h2>
+      <div class="price">$995 USD · one-time</div>
+      <p>A structured, evidence-led assessment of your B2B SaaS revenue process to identify potential leakage, pipeline friction, conversion bottlenecks, follow-up gaps, handoff failures and renewal risks.</p>
+      <ul class="steps">
+        <li>Revenue Risk Assessment</li>
+        <li>Pipeline Friction Map</li>
+        <li>Conversion Bottleneck Analysis</li>
+        <li>Evidence-based findings separating verified facts, hypotheses and unknowns</li>
+        <li>Prioritized recommendations and practical action plan</li>
+      </ul>
+      <p><strong>Scope:</strong> Required inputs, deliverables and turnaround are governed by the agreed statement of work. Findings depend on information and access provided. No revenue recovery, financial outcome or ROI is guaranteed.</p>
+      <a class="cta" href="https://dodo.pe/executive-revenue-leak-assessment" aria-label="Purchase the $995 Executive Revenue Leak Assessment">Purchase the Assessment</a>
     </section>
   </div>
+  <section class="note" aria-labelledby="free-tools-title">
+    <h2 id="free-tools-title">Free diagnostic tools</h2>
+    <p>Use the available tools to inspect a narrow problem before deciding whether a deeper audit is warranted. Sample data is illustrative and is not a customer case study.</p>
+    <a class="cta" href="index.html#assessment">Start with the free assessment</a>
+  </section>
   <h2>How the work stays evidence-led</h2>
   <ol class="steps">
     <li><strong>Establish the evidence:</strong> review the available definitions, funnel data and operating process.</li>
@@ -100,7 +114,7 @@
     if(!url)return;
     if(/^mailto:/i.test(href)){track("contact_email_click",{link_text:"Email link",page_path:window.location.pathname});return;}
     var sameOrigin=url.origin===window.location.origin;
-    if(/(^|\.)checkout\.dodopayments\.com$/i.test(url.hostname)){
+    if(/(^|\.)checkout\.dodopayments\.com$|(^|\.)dodo\.pe$/i.test(url.hostname)){
       track("checkout_outbound_click",{link_text:label,destination_host:url.hostname,page_path:window.location.pathname});return;
     }
     if(sameOrigin&&/(^|\/)contact\.html$/i.test(url.pathname)){
