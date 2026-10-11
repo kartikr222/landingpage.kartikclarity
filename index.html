@@ -503,18 +503,27 @@
     gap:clamp(10px,1.2vw,18px);
   }
   .header-inner > .brand{
+    display:flex;
     flex:0 0 auto;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
     min-width:0;
-    gap:10px;
+    gap:2px;
     white-space:nowrap;
+    line-height:1;
   }
   .header-inner > .brand img{
+    display:block;
     width:40px;
     height:40px;
     flex:0 0 40px;
   }
   .header-inner > .brand .brand-name{
-    font-size:16px;
+    display:block;
+    font-size:11px;
+    line-height:1.1;
+    text-align:center;
     white-space:nowrap;
   }
   nav.main-nav{
