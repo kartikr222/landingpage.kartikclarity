@@ -309,10 +309,11 @@
 
   /* ---------- Value ladder ---------- */
   .ladder{background:var(--white);}
-  .ladder-track{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;position:relative;}
-  @media (max-width:900px){.ladder-track{grid-template-columns:1fr;}}
+  .ladder-track{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;position:relative;}
+  @media (max-width:1100px){.ladder-track{grid-template-columns:repeat(2,minmax(0,1fr));}}
+  @media (max-width:620px){.ladder-track{grid-template-columns:1fr;}}
   .ladder-card{
-    border:1px solid var(--hairline);border-radius:14px;padding:32px 28px;background:var(--paper);
+    border:1px solid var(--hairline);border-radius:14px;padding:24px 20px;background:var(--paper);
     display:flex;flex-direction:column;position:relative;
   }
   .ladder-card.featured{
@@ -788,27 +789,27 @@
   <div class="wrap">
     <div class="section-head fade-in">
       <span class="eyebrow">Where to start</span>
-      <h2>Three ways to close the leak, in order</h2>
-      <p>Start where you are. Most people begin with the Workbook to see the pattern for themselves, then bring in the Executive Audit once they know it's worth fixing properly.</p>
+      <h2>Four ways to close the leak, in order</h2>
+      <p>Start with a self-guided diagnosis, use the toolkit to investigate the gaps, choose a structured evidence-led assessment, or engage Kartik Clarity™ for a deeper executive audit.</p>
     </div>
     <div class="ladder-track fade-in">
       <div class="ladder-card">
         <span class="ladder-step">Step 1 · Diagnose it yourself</span>
         <h3>Revenue Leak Detector Workbook</h3>
         <div class="price">$19</div>
-        <p class="desc">A guided workbook that walks you through your own pipeline, zone by zone, so you can find your biggest leak in under an hour.</p>
+        <p class="desc">A guided workbook to inspect your pipeline zone by zone and identify where to investigate first.</p>
         <ul>
-          <li>Full Revenue Leak Score assessment</li>
-          <li>Worksheet for all five leak zones</li>
+          <li>Revenue Leak Score™ assessment</li>
+          <li>Worksheets for all five leak zones</li>
           <li>Plain-language scoring guide</li>
         </ul>
         <a class="ladder-cta" href="https://checkout.dodopayments.com/buy/pdt_0NkHko9xlk0DIWbFwS6JW?quantity=1">Get the Workbook</a>
       </div>
-      <div class="ladder-card featured">
+      <div class="ladder-card">
         <span class="ladder-step">Step 2 · Fix it yourself</span>
         <h3>Revenue Leak Architecture Toolkit™</h3>
         <div class="price">$27</div>
-        <p class="desc">Templates and scripts for the exact fixes each leak zone needs, so you can close the gap without hiring anyone.</p>
+        <p class="desc">Templates and scripts to investigate follow-up, handoff and renewal friction with a consistent process.</p>
         <ul>
           <li>Everything in the Workbook</li>
           <li>Follow-up and handoff templates</li>
@@ -816,20 +817,34 @@
         </ul>
         <a class="ladder-cta" href="https://checkout.dodopayments.com/buy/pdt_0NjVf5fEPgLfkgNwoiIYV?quantity=1">Get the Toolkit</a>
       </div>
+      <div class="ladder-card featured" id="executive-assessment">
+        <span class="ladder-step">Step 3 · Get a structured assessment</span>
+        <h3>Executive Revenue Leak Assessment</h3>
+        <div class="price">$995 USD</div>
+        <p class="desc">An evidence-led review of your B2B revenue process to identify potential leakage, pipeline friction, conversion bottlenecks, follow-up gaps, handoff failures and renewal risks.</p>
+        <ul>
+          <li>Revenue Risk Assessment</li>
+          <li>Pipeline Friction Map</li>
+          <li>Conversion Bottleneck Analysis</li>
+          <li>Evidence-based findings and prioritized action plan</li>
+        </ul>
+        <p class="desc" style="font-size:12px;flex-grow:0;border-top:1px solid rgba(255,255,255,0.14);padding-top:12px;">Scope, required inputs, deliverables and turnaround are governed by the agreed statement of work. No revenue recovery, financial outcome or ROI is guaranteed.</p>
+        <a class="ladder-cta" href="https://dodo.pe/executive-revenue-leak-assessment">Purchase the Assessment</a>
+      </div>
       <div class="ladder-card">
-        <span class="ladder-step">Step 3 · Have it done with you</span>
+        <span class="ladder-step">Step 4 · Have it done with you</span>
         <h3>Executive Revenue Leak Audit</h3>
-        <div class="price">$9,500</div>
-        <p class="desc">A hands-on engagement where we map every leak in your revenue engine and prioritize what to fix first, together.</p>
+        <div class="price">$9,500 USD</div>
+        <p class="desc">A hands-on engagement to map revenue execution risks and prioritize what to address first with leadership.</p>
         <ul>
           <li>Full pipeline and CRM diagnostic</li>
           <li>Prioritized fix roadmap</li>
           <li>Direct working sessions with Kartik</li>
         </ul>
-        <a class="ladder-cta" href="https://checkout.dodopayments.com/buy/pdt_0NkHn2rkuFUnWY0xyyT8c?quantity=1">Apply for the Audit</a>
+        <a class="ladder-cta" href="https://checkout.dodopayments.com/buy/pdt_0NkHn2rkuFUnWY0xyyT8c?quantity=1">Discuss the Audit</a>
       </div>
     </div>
-    <div class="ladder-connector fade-in">SEE THE PATTERN → FIX IT YOURSELF → OR HAVE US FIX IT WITH YOU</div>
+    <div class="ladder-connector fade-in">SEE THE PATTERN → FIX IT YOURSELF → GET AN EVIDENCE-LED ASSESSMENT → HAVE IT DONE WITH YOU</div>
   </div>
 </section>
 
@@ -948,6 +963,7 @@
         <h4>Products</h4>
         <a href="#products">Workbook · $19</a>
         <a href="#products">Toolkit · $27</a>
+        <a href="services.html#executive-assessment">Executive Assessment · $995</a>
         <a href="#products">Executive Audit · $9,500</a>
       </div>
       <div class="foot-col">
@@ -1297,7 +1313,7 @@
     if(!url)return;
     if(/^mailto:/i.test(href)){track("contact_email_click",{link_text:"Email link",page_path:window.location.pathname});return;}
     var sameOrigin=url.origin===window.location.origin;
-    if(/(^|\.)checkout\.dodopayments\.com$/i.test(url.hostname)){
+    if(/(^|\.)checkout\.dodopayments\.com$|(^|\.)dodo\.pe$/i.test(url.hostname)){
       // This records checkout intent only, never a completed purchase. Delay navigation
       // briefly so GA4 has a chance to dispatch the event; always fall back if blocked.
       event.preventDefault();
