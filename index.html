@@ -500,24 +500,25 @@
 
   /* ---------- Responsive header layout fix ---------- */
   .header-inner{
-    gap:clamp(10px,1.2vw,18px);
+    gap:clamp(12px,1.4vw,20px);
   }
   .header-inner > .brand{
     display:flex;
-    flex:0 0 auto;
+    flex:0 0 108px;
+    width:108px;
     flex-direction:column;
     align-items:center;
     justify-content:center;
-    min-width:0;
+    min-width:108px;
     gap:2px;
     white-space:nowrap;
     line-height:1;
   }
   .header-inner > .brand img{
     display:block;
-    width:40px;
-    height:40px;
-    flex:0 0 40px;
+    width:38px;
+    height:38px;
+    flex:0 0 38px;
   }
   .header-inner > .brand .brand-name{
     display:block;
@@ -527,26 +528,25 @@
     white-space:nowrap;
   }
   nav.main-nav{
+    display:flex;
     flex:1 1 auto;
     min-width:0;
-    justify-content:flex-end;
-    gap:clamp(10px,1.1vw,16px);
+    justify-content:center;
+    gap:clamp(10px,1vw,15px);
   }
   nav.main-nav a{
     flex:0 0 auto;
     white-space:nowrap;
     font-size:clamp(12px,.98vw,14px);
   }
+  /* Social icons live elsewhere; keeping them out of the header prevents nav collisions. */
   .header-inner > .social-links{
-    flex:0 0 auto;
-    margin-left:0;
+    display:none !important;
   }
   .header-inner > .header-actions{
     flex:0 0 auto;
     gap:8px;
-  }
-  @media(max-width:1280px){
-    .header-inner > .social-links{display:none;}
+    margin-left:auto;
   }
   @media(max-width:1150px){
     .header-inner{height:70px;}
@@ -554,7 +554,7 @@
     .nav-toggle{display:flex;}
     .header-actions .signin-link,
     .header-actions .header-cta{display:none;}
-    .header-inner > .social-links{display:none;}
+    .header-inner > .social-links{display:none !important;}
   }
 
 </style>
