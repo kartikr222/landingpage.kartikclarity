@@ -976,7 +976,6 @@
         <h4>Account</h4>
         <div class="foot-badges">
           <button type="button" class="badge" onclick="openSignin()" aria-label="Account access information">Account access</button>
-          <button type="button" class="badge" onclick="openSignin()" aria-label="Account access information">Account access</button>
           <a class="badge" href="https://checkout.dodopayments.com/buy/pdt_0NkHn2rkuFUnWY0xyyT8c?quantity=1" aria-label="Pay via Dodo Payments">Pay via Dodo Payments</a>
         </div>
       </div>
@@ -997,7 +996,7 @@
     <button class="modal-close" onclick="closeSignin()" aria-label="Close">&times;</button>
     <span class="eyebrow" style="margin-bottom:6px;">Kartik Clarity™</span>
     <h3>Account access</h3>
-    <p class="modal-sub">Account sign-in is not available yet. No Google sign-in or email sign-in link is connected on this website.</p>
+    <p class="modal-sub">Email-based sign-in is not connected yet. When account access is enabled, you will be able to sign in with any valid email address; a work email will not be required. A business email may be requested separately when checking fit for a business service.</p>
     <a class="btn-primary" style="width:100%;justify-content:center;display:flex;text-decoration:none;" href="mailto:info.kartikclarity@gmail.com?subject=Kartik%20Clarity%20account%20or%20order%20question">Email about access or an order</a>
     <p class="modal-legal">Please do not email passwords, payment-card details or confidential customer records. See the <a href="privacy-policy.html">Privacy Policy</a> and <a href="terms-of-service.html">Terms of Service</a>.</p>
   </div>
@@ -1036,6 +1035,7 @@
   // sign-in modal
   function openSignin(){ document.getElementById('signinOverlay').classList.add('open'); document.body.style.overflow='hidden'; }
   function closeSignin(){ document.getElementById('signinOverlay').classList.remove('open'); document.body.style.overflow=''; }
+  if (window.location.hash === '#account-access') openSignin();
 
   // Legal pages
   const privacyPolicy = `
