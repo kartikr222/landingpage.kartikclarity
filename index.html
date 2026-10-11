@@ -497,6 +497,53 @@
   .footer-social .social-icon{width:38px;height:38px;flex-basis:38px}
 }
 .skip-link{position:fixed;z-index:9999;top:8px;left:8px;transform:translateY(-160%);padding:12px 16px;background:#fff;color:#0B1E33;border:2px solid #0B1E33;border-radius:6px;font-weight:700;text-decoration:none}.skip-link:focus{transform:translateY(0)}
+
+  /* ---------- Responsive header spacing fix ---------- */
+  .header-inner{
+    gap:clamp(12px,1.5vw,20px);
+  }
+  .header-inner > .brand{
+    flex:0 0 auto;
+    min-width:max-content;
+  }
+  nav.main-nav{
+    flex:1 1 auto;
+    min-width:0;
+    justify-content:center;
+    gap:clamp(12px,1.35vw,20px);
+    white-space:nowrap;
+  }
+  nav.main-nav a{
+    flex:0 0 auto;
+    white-space:nowrap;
+  }
+  .header-inner > .social-links{
+    flex:0 0 auto;
+    margin-left:0;
+  }
+  .header-inner > .header-actions{
+    flex:0 0 auto;
+    gap:10px;
+  }
+  @media(max-width:1240px){
+    .header-inner > .social-links{display:none;}
+  }
+  @media(max-width:1100px){
+    nav.main-nav{gap:12px;}
+    .brand{gap:9px;}
+    .brand-name{font-size:16px;}
+    .header-actions .signin-link{display:none;}
+    .header-actions .header-cta{padding:10px 14px;}
+  }
+  @media(max-width:1000px){
+    .header-inner{height:70px;}
+    nav.main-nav{display:none;}
+    .nav-toggle{display:flex;}
+    .header-actions .signin-link,
+    .header-actions .header-cta{display:none;}
+    .header-inner > .social-links{display:none;}
+  }
+
 </style>
 <meta property="og:image:alt" content="Kartik Clarity™ revenue leak diagnostics">
 </head>
