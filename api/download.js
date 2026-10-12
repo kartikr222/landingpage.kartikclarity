@@ -45,7 +45,7 @@ module.exports = async (req, res) => {
   }
 
   const fileId = String((req.query && req.query.fileId) || "");
-  if (!/^\d{1,18}$/.test(fileId)) {
+  if (!/^[1-9]\d{0,18}$/.test(fileId)) {
     return json(res, 404, { error: "File not found." });
   }
 
@@ -77,7 +77,7 @@ module.exports = async (req, res) => {
              AND lower(entitlement.customer_email) IN (${emailClause})
          )
        LIMIT 1`,
-      [Number(fileId), ...identity.emails]
+      [fileId, ...identity.emails]
     );
 
     // Deliberately return the same 404 for missing files and missing entitlements.
@@ -104,16 +104,21 @@ module.exports = async (req, res) => {
     const fileName = String(rows[0].file_name || "download")
       .replace(/[\r\n"\\]/g, "_")
       .slice(0, 180) || "download";
+    const asciiFileName = fileName.replace(/[^\x20-\x7E]/g, "_");
+    const encodedFileName = encodeURIComponent(fileName).replace(/[!'()*]/g, (character) =>
+      "%" + character.charCodeAt(0).toString(16).toUpperCase()
+    );
 
     res.statusCode = 200;
     res.setHeader("Content-Type", contentType);
-    res.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"; filename*=UTF-8''" + encodeURIComponent(fileName));
+    res.setHeader("Content-Disposition", "attachment; filename=\"" + asciiFileName + "\"; filename*=UTF-8''" + encodedFileName);
     res.setHeader("Cache-Control", "private, no-store, max-age=0");
     res.setHeader("Pragma", "no-cache");
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("Content-Security-Policy", "default-src 'none'; sandbox");
-    if (Number.isSafeInteger(Number(blob.blob && blob.blob.size))) {
-      res.setHeader("Content-Length", String(blob.blob.size));
+    const blobSize = blob.blob && blob.blob.size;
+    if (Number.isSafeInteger(blobSize) && blobSize >= 0) {
+      res.setHeader("Content-Length", String(blobSize));
     }
     Readable.fromWeb(blob.stream).pipe(res);
   } catch (_) {
