@@ -21,6 +21,8 @@ def read(path):
 config = read("api/config.js")
 workspace = read("api/workspace.js")
 webhook = read("api/webhooks/dodo.js")
+download = read("api/download.js")
+uploader = read("scripts/upload_private_product.mjs")
 assessment = read("api/assessment.js")
 schema = read("db/schema.sql")
 ui = read("workspace/index.html")
