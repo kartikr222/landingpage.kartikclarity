@@ -135,8 +135,18 @@
       items.forEach((purchase) => {
         const card = element("article", "report");
         card.append(element("h3", "", purchase.product_name || "Purchased product"));
-        card.append(element("div", "report-meta", "Verified purchase · " + (purchase.purchased_at ? new Date(purchase.purchased_at).toLocaleDateString() : "Date not available")));
-        card.append(element("p", "", "Access is recorded for this purchase. Download delivery will appear here only after secure file storage and the relevant deliverable are configured."));
+        const status = purchase.status || "active";
+        const statusLabel = status === "active"
+          ? "Verified purchase · access active"
+          : status === "review"
+            ? "Access temporarily paused during payment review"
+            : "Access revoked following a refund or payment dispute";
+        card.append(element("div", "report-meta", statusLabel + " · " + (purchase.purchased_at ? new Date(purchase.purchased_at).toLocaleDateString() : "Date not available")));
+        card.append(element("p", "", status === "active"
+          ? "Your verified purchase is recorded. Download delivery will appear here only after secure file storage and the relevant deliverable are configured."
+          : status === "review"
+            ? "Access is paused while the payment dispute is reviewed. If you believe this is incorrect, contact support."
+            : "This purchase no longer grants workspace access. Contact support if you believe the payment status is incorrect."));
         target.append(card);
       });
     }
