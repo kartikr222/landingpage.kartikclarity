@@ -11,5 +11,8 @@
     "@neondatabase/serverless": "^1.0.2",
     "svix": "^1.80.0",
     "@vercel/blob": "^2.3.0"
+  },
+  "devDependencies": {
+    "pg": "^8.16.3"
   }
 }
