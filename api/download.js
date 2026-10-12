@@ -1,6 +1,7 @@
 const { verifyToken, createClerkClient } = require("@clerk/backend");
 const { neon } = require("@neondatabase/serverless");
 const { Readable } = require("node:stream");
+const { clientIp, enforceRateLimit } = require("./_lib/rate-limit");
 
 const json = (res, status, body) => {
   res.statusCode = status;
@@ -44,6 +45,8 @@ module.exports = async (req, res) => {
     return json(res, 503, { error: "Secure downloads are not configured." });
   }
 
+  if (!(await enforceRateLimit(req, res, [{ scope: "product-download-ip", identifier: clientIp(req), limit: 20, windowSeconds: 60 }], { failClosed: true }))) return;
+
   const fileId = String((req.query && req.query.fileId) || "");
   if (!/^[1-9]\d{0,18}$/.test(fileId)) {
     return json(res, 404, { error: "File not found." });
@@ -58,6 +61,7 @@ module.exports = async (req, res) => {
   if (!identity || !identity.emails.length) {
     return json(res, 401, { error: "A verified sign-in session is required." });
   }
+  if (!(await enforceRateLimit(req, res, [{ scope: "product-download-user", identifier: identity.userId, limit: 60, windowSeconds: 600 }], { failClosed: true }))) return;
 
   try {
     const emailClause = identity.emails
