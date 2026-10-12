@@ -148,6 +148,7 @@ CREATE TABLE IF NOT EXISTS private_report_files (
   id BIGSERIAL PRIMARY KEY,
   report_id BIGINT NOT NULL REFERENCES workspace_reports(id) ON DELETE CASCADE,
   owner_clerk_user_id TEXT NOT NULL,
+  product_id TEXT NOT NULL,
   blob_pathname TEXT NOT NULL UNIQUE,
   file_name TEXT NOT NULL,
   content_type TEXT NOT NULL CHECK (
