@@ -27,6 +27,7 @@ jobs:
         run: |
           node --check api/config.js
           node --check api/workspace.js
+          node --check api/assessment.js
           node --check api/webhooks/dodo.js
       - name: Check patch whitespace
         run: git diff --check
