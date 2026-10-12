@@ -146,9 +146,9 @@ check('access: "private"' in uploader and "knownProductIds.includes(productId)" 
       "Operator upload script must use private Blob and accept only explicitly mapped Dodo product IDs")
 check("private_product_files" in uploader and "25 * 1024 * 1024" in uploader,
       "Product uploader must register file metadata and enforce the 25 MiB limit")
-check("downloadsAvailable: storageConfigured && purchases.some" in workspace,
+check("downloadsAvailable: storageConfigured && (purchases.some" in workspace,
       "Workspace must expose downloads only when private files are mapped for an active purchase")
-check("/api/download?fileId=" in ui,
+check('"/api/download"' in ui and '"/api/report-download"' in ui and '"?fileId="' in ui,
       "Purchase UI must provide authenticated downloads without exposing private Blob URLs")
 check('"svix"' in package and '"@clerk/backend"' in package and '"@neondatabase/serverless"' in package and '"@vercel/blob"' in package,
       "Required authentication, database, webhook and private storage packages must be declared")
