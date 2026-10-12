@@ -110,6 +110,33 @@ module.exports = async (req, res) => {
           ON CONFLICT (provider, payment_id, product_id) DO NOTHING
         `;
       }
+      // Reconcile after inserts as well as before them. A refund/dispute can race
+      // with payment.succeeded: if its entitlement UPDATE ran before this insert,
+      // this final sync prevents the newly inserted row from staying active.
+      await sql`
+        UPDATE purchase_entitlements AS entitlement
+        SET status = lifecycle.status,
+            status_reason = lifecycle.status_reason,
+            status_updated_at = now()
+        FROM payment_lifecycle AS lifecycle
+        WHERE entitlement.provider = 'dodo'
+          AND entitlement.payment_id = ${paymentId}
+          AND lifecycle.provider = entitlement.provider
+          AND lifecycle.payment_id = entitlement.payment_id
+          AND entitlement.status IS DISTINCT FROM lifecycle.status
+      `;
+      const finalLifecycle = await sql`
+        SELECT status FROM payment_lifecycle
+        WHERE provider = 'dodo' AND payment_id = ${paymentId}
+        LIMIT 1
+      `;
+      if (!finalLifecycle.length || finalLifecycle[0].status !== "active") {
+        return json(res, 200, {
+          received: true,
+          processed: false,
+          reason: "Payment lifecycle changed during fulfillment; entitlements were reconciled.",
+        });
+      }
       return json(res, 200, { received: true, processed: true, matchedProducts: configured.length });
     }
 
