@@ -1,6 +1,7 @@
 const { verifyToken, createClerkClient } = require("@clerk/backend");
 const { neon } = require("@neondatabase/serverless");
 const { Readable } = require("node:stream");
+const { clientIp, enforceRateLimit } = require("./_lib/rate-limit");
 
 function json(res, status, body) {
   res.statusCode = status;
@@ -29,11 +30,13 @@ module.exports = async (req, res) => {
   if (process.env.WORKSPACE_ENABLED !== "true" || !process.env.CLERK_SECRET_KEY || !process.env.DATABASE_URL || !process.env.BLOB_READ_WRITE_TOKEN) {
     return json(res, 503, { error: "Secure report downloads are not configured." });
   }
+  if (!(await enforceRateLimit(req, res, [{ scope: "report-download-ip", identifier: clientIp(req), limit: 20, windowSeconds: 60 }], { failClosed: true }))) return;
   const fileId = String((req.query && req.query.fileId) || "");
   if (!/^[1-9]\d{0,18}$/.test(fileId)) return json(res, 404, { error: "File not found." });
   let user;
   try { user = await identity(req); } catch (_) { return json(res, 401, { error: "A valid sign-in session is required." }); }
   if (!user || !user.emails.length) return json(res, 401, { error: "A verified sign-in session is required." });
+  if (!(await enforceRateLimit(req, res, [{ scope: "report-download-user", identifier: user.userId, limit: 60, windowSeconds: 600 }], { failClosed: true }))) return;
   try {
     const sql = neon(process.env.DATABASE_URL);
     const emailPlaceholders = user.emails.map((_, index) => "$" + (index + 3)).join(", ");
