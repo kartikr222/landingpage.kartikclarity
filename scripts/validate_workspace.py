@@ -59,8 +59,8 @@ check("verifyToken" in workspace and "req.headers.authorization" in workspace,
       "Private API must verify a bearer session token")
 check('entry.verification.status === "verified"' in workspace,
       "Only verified email addresses may associate purchases/reports")
-check("owner_clerk_user_id = ${identity.userId}" in workspace,
-      "Report reads must be scoped to the authenticated Clerk user")
+check("owner_clerk_user_id = $1" in workspace and "[identity.userId, ...emails]" in workspace,
+      "Report reads must be scoped to the authenticated Clerk user with a parameterized query")
 check("owner_clerk_user_id IS NULL" in workspace,
       "Legacy email ownership must not override a report's explicit user owner")
 check("lower(customer_email) IN (${emailPlaceholders})" in workspace and
