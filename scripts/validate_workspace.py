@@ -90,6 +90,8 @@ check("ON CONFLICT (provider, payment_id, product_id)" in webhook,
       "Repeated webhook deliveries must be idempotent")
 check("payment_lifecycle" in webhook and "payment_lifecycle" in schema,
       "Payment lifecycle must protect against out-of-order refund/dispute events")
+check("FROM payment_lifecycle AS lifecycle" in webhook and "Reconcile after inserts" in webhook,
+      "Webhook must reconcile payment state after inserting entitlement records")
 check('event.type === "refund.succeeded"' in webhook,
       "Successful refunds must be handled")
 check('data.is_partial === true' in webhook,
