@@ -102,9 +102,9 @@ try {
   if (!inserted.length) throw new Error("Report insert returned no ID.");
   reportId = inserted[0].id;
   await sql.query(
-    "INSERT INTO private_report_files (report_id, owner_clerk_user_id, blob_pathname, file_name, content_type, size_bytes, active, created_at, updated_at) " +
-    "VALUES ($1, $2, $3, $4, $5, $6, TRUE, now(), now())",
-    [reportId, userId, blob.pathname, fileName, contentType, bytes.length]
+    "INSERT INTO private_report_files (report_id, owner_clerk_user_id, product_id, blob_pathname, file_name, content_type, size_bytes, active, created_at, updated_at) " +
+    "VALUES ($1, $2, $3, $4, $5, $6, $7, TRUE, now(), now())",
+    [reportId, userId, productId, blob.pathname, fileName, contentType, bytes.length]
   );
 } catch (error) {
   if (reportId !== null) {
