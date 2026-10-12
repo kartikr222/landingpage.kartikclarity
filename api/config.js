@@ -24,12 +24,16 @@ module.exports = (req, res) => {
     process.env.DODO_PRODUCT_ID_ASSESSMENT_995,
     process.env.DODO_PRODUCT_ID_AUDIT_9500,
   ].filter(Boolean);
+  const storageConfigured = Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 
   return json(res, 200, {
     workspaceReady,
     clerkConfigured,
     databaseConfigured,
     paymentsConfigured: Boolean(process.env.DODO_WEBHOOK_SECRET && productIds.length),
+    mappedProductCount: productIds.length,
+    storageConfigured,
+    downloadsConfigured: storageConfigured,
     publishableKey: workspaceReady ? publishableKey : null,
     message: workspaceReady
       ? "Workspace services are configured."
