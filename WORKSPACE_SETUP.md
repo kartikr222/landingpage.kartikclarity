@@ -7,7 +7,7 @@ The public HTML site and free assessment remain public. The workspace is deliber
 - `/workspace/`: setup-aware client workspace UI. It does not display a sign-in form until Clerk and PostgreSQL are configured.
 - `/api/config`: exposes only public setup status and the Clerk publishable key (never the secret).
 - `/api/workspace`: server-side verified Clerk token, verified email lookup, and per-user report/purchase queries.
-- `/api/webhooks/dodo`: verifies the Svix-style Dodo webhook signature and only records `payment.succeeded` events for explicitly mapped product IDs.
+- `/api/webhooks/dodo`: verifies signed Dodo webhook events, grants only explicitly mapped successful payments, and tracks full refunds and dispute lifecycle changes.
 - `/db/schema.sql`: private report and purchase entitlement tables.
 
 ## Required Vercel environment variables
@@ -26,7 +26,7 @@ Set these on the **Kartik Clarity** Vercel project, not the separate Revenue Lea
 | `DODO_PRODUCT_ID_ASSESSMENT_995` | Exact Dodo product ID for the $995 assessment |
 | `DODO_PRODUCT_ID_AUDIT_9500` | Exact Dodo product ID for the $9,500 audit |
 
-The four product ID variables must contain actual product IDs from Dodo, not the public checkout URLs or the displayed prices. A product without a mapping never unlocks access. Leave unmapped products unset until verified.
+The four product ID variables must contain actual product IDs from Dodo, not the public checkout URLs or the displayed prices. A product without a mapping never unlocks access. Leave unmapped products unset until verified. The webhook uses idempotent inserts and a payment-level lifecycle row so a refund/dispute delivered before a success event cannot grant access later.
 
 ## Activation sequence
 
@@ -48,8 +48,8 @@ The four product ID variables must contain actual product IDs from Dodo, not the
 - Reports are read-only from the customer UI. Report authoring/upload is not implemented.
 - Downloads are intentionally disabled; there is no public file URL.
 - Payment entitlements are linked to the normalized purchase email and are visible only when it matches an email verified on the signed-in Clerk account. Purchases made with another email need a verified support process; do not manually bypass ownership checks.
-- The webhook handles successful one-time payments for the four configured product IDs. Subscriptions, refunds, chargebacks, partial refunds, and entitlement revocation are not implemented. Do not sell subscription access on the basis of this handler.
-- A webhook event may be accepted before all customer data is available; inspect Dodo's actual test payload before enabling production. Only the documented successful event and mapped product identifiers can create an entitlement.
+- The webhook handles successful one-time payments for the four configured product IDs. Full refunds revoke access; partial refunds retain access; open/challenged disputes pause access; lost/accepted/expired disputes revoke access; won/cancelled disputes can restore access only from the pending-review state. Subscriptions are not implemented. Confirm these business rules match your refund policy before launch.
+- Inspect actual Dodo test payloads and event ordering before production. Only signed events with mapped product IDs can create entitlements; refunds and disputes change access state but never create a purchase.
 - Configure rate limiting/abuse monitoring for auth and webhook endpoints before launch. The signature is verified, but operational monitoring and reconciliation remain necessary.
 - This project is a static HTML site with Vercel Functions, not a Next.js application. Do not replace the public site with an unrelated application scaffold.
 
