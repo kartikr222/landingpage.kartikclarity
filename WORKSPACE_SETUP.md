@@ -40,14 +40,14 @@ The four product ID variables must contain actual product IDs from Dodo, not the
 7. Only after the schema is applied and the security smoke tests below pass, set `WORKSPACE_ENABLED=true` for the intended environment and redeploy.
 8. Test sign-up, email verification, sign-in, sign-out, session expiry, a user with no reports, a report assigned to one user, and an attempted cross-user report access. Verify that an unverified email does not attach a purchase to the account.
 9. Test the webhook with an invalid signature (must be rejected), an unsupported event (must not grant access), an unmapped product (must not grant access), and a repeated delivery (must not duplicate an entitlement).
-10. Populate `workspace_reports` only through a trusted, access-controlled operator workflow after confirming the client's identity and scope. This branch intentionally does not invent reports or generate downloadable files. Secure file storage and protected download URLs must be implemented before downloads are offered.
+10. Create the private Blob store and upload approved real product deliverables using the procedure in the Private product downloads section below. Populate `workspace_reports` only through a trusted, access-controlled operator workflow after confirming the client's identity and scope.
 11. Confirm Privacy Policy wording, data retention, deletion/support workflow, and your legal basis before putting real customer business information in the database.
 
 ## Important current limitations
 
 - No production secrets or product IDs are included in this repository.
 - The signed-in user can save a directional preview of the public three-question assessment. This is not the full paid diagnostic. Other client reports are read-only from the customer UI; report authoring/upload for those deliverables is not implemented.
-- Downloads are intentionally disabled; there is no public file URL.
+- Protected downloads require configured private Blob storage, an applied schema migration, and uploaded real deliverables; they are not available until those dependencies are ready.
 - Payment entitlements are linked to the normalized purchase email and are visible only when it matches an email verified on the signed-in Clerk account. Purchases made with another email need a verified support process; do not manually bypass ownership checks.
 - The webhook handles successful one-time payments for the four configured product IDs. Full refunds revoke access; partial refunds retain access; open/challenged disputes pause access; lost/accepted/expired disputes revoke access; won/cancelled disputes can restore access only from the pending-review state. Subscriptions are not implemented. Confirm these business rules match your refund policy before launch.
 - Inspect actual Dodo test payloads and event ordering before production. Only signed events with mapped product IDs can create entitlements; refunds and disputes change access state but never create a purchase.
