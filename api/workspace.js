@@ -79,17 +79,41 @@ module.exports = async (req, res) => {
       process.env.DODO_PRODUCT_ID_AUDIT_9500,
     ].some(Boolean);
     const purchasesAvailable = Boolean(process.env.DODO_WEBHOOK_SECRET && productsConfigured);
+    const storageConfigured = Boolean(process.env.BLOB_READ_WRITE_TOKEN);
     let purchases = [];
     if (purchasesAvailable && emails.length) {
-      const emailPlaceholders = emails.map((_, index) => `$${index + 1}`).join(", ");
-      purchases = await sql.query(
-        `SELECT entitlement_key, product_name, purchased_at, status, status_reason
-         FROM purchase_entitlements
-         WHERE lower(customer_email) IN (${emailPlaceholders})
-         ORDER BY purchased_at DESC
-         LIMIT 100`,
+      const emailPlaceholders = emails.map((_, index) => "$" + (index + 1)).join(", ");
+      const rows = await sql.query(
+        "SELECT product_id, entitlement_key, product_name, purchased_at, status, status_reason " +
+        "FROM purchase_entitlements WHERE lower(customer_email) IN (" + emailPlaceholders + ") " +
+        "ORDER BY purchased_at DESC LIMIT 100",
         emails
       );
+
+      const productIds = [...new Set(rows.map((purchase) => purchase.product_id).filter(Boolean))];
+      let files = [];
+      if (storageConfigured && productIds.length) {
+        const productPlaceholders = productIds.map((_, index) => "$" + (index + 1)).join(", ");
+        files = await sql.query(
+          "SELECT id, product_id, file_name FROM private_product_files " +
+          "WHERE active = TRUE AND product_id IN (" + productPlaceholders + ") " +
+          "ORDER BY product_id, file_name LIMIT 200",
+          productIds
+        );
+      }
+
+      const filesByProduct = new Map();
+      for (const file of files) {
+        const key = String(file.product_id);
+        if (!filesByProduct.has(key)) filesByProduct.set(key, []);
+        filesByProduct.get(key).push({ id: file.id, file_name: file.file_name });
+      }
+      purchases = rows.map((purchase) => ({
+        ...purchase,
+        downloads: purchase.status === "active"
+          ? (filesByProduct.get(String(purchase.product_id)) || [])
+          : [],
+      }));
     }
 
     return json(res, 200, {
@@ -98,7 +122,7 @@ module.exports = async (req, res) => {
       capabilities: {
         reportsAvailable: true,
         purchasesAvailable,
-        downloadsAvailable: false,
+        downloadsAvailable: storageConfigured && purchases.some((purchase) => purchase.downloads.length > 0),
       },
     });
   } catch (_) {
