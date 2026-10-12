@@ -58,8 +58,9 @@ check('meta name="robots" content="noindex,nofollow"' in ui,
 # Payment fulfillment is only based on signed, mapped successful events.
 check("verifier.verify(rawBody" in webhook and '"webhook-signature"' in webhook,
       "Dodo webhook signature must be verified over the raw body")
-check('event.type !== "payment.succeeded"' in webhook,
-      "Non-success events must not grant purchases")
+check('event.type === "payment.succeeded"' in webhook and
+      'return json(res, 200, { received: true, processed: false });' in webhook,
+      "Only successful payment events may grant purchases; unrelated events must be acknowledged without a grant")
 check("No configured product mapping matched" in webhook,
       "Unmapped products must fail closed")
 check("ON CONFLICT (provider, payment_id, product_id)" in webhook,
