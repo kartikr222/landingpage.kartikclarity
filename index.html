@@ -306,6 +306,7 @@
   .gauge-num .n{font-family:'IBM Plex Mono',monospace;font-size:38px;color:var(--cyan-400);}
   .gauge-num .l{font-size:11px;color:#aeb9d4;letter-spacing:0.06em;text-transform:uppercase;margin-top:2px;}
   .assess-right p{font-size:13px;color:#c9d3e8;margin-top:22px;max-width:280px;line-height:1.6;}
+  #savePreviewStatus{font-size:12px;color:#c9d3e8;margin-top:10px;}
 
   /* ---------- Value ladder ---------- */
   .ladder{background:var(--white);}
@@ -781,6 +782,8 @@
           <div class="gauge-num"><div class="n" id="gaugeNum">--</div><div class="l">Leak Score</div></div>
         </div>
         <p>This preview score is directional. The full Revenue Leak Score inside the Workbook breaks it down by all five zones with a prioritized action list.</p>
+        <button id="savePreviewBtn" class="btn-primary" type="button" hidden onclick="savePreviewToWorkspace()">Save preview to My Reports</button>
+        <p id="savePreviewStatus" aria-live="polite"></p>
       </div>
     </div>
   </div>
@@ -1216,6 +1219,39 @@
   const gnum = document.getElementById('gaugeNum');
   const CIRC = 502.4;
   let scores = [null,null,null];
+  let workspaceAvailable = false;
+  function refreshSavePreview(){
+    const button = document.getElementById('savePreviewBtn');
+    if(button) button.hidden = !(workspaceAvailable && scores.every(s=>s!==null));
+  }
+  async function checkWorkspaceForSave(){
+    try{
+      const response = await fetch('/api/config',{cache:'no-store'});
+      const config = await response.json();
+      workspaceAvailable = response.ok && config.workspaceReady === true;
+    }catch(_){ workspaceAvailable = false; }
+    refreshSavePreview();
+  }
+  function savePreviewToWorkspace(){
+    if(!workspaceAvailable || !scores.every(s=>s!==null)) return;
+    try{
+      const makeUuid = () => {
+        if(window.crypto && typeof window.crypto.randomUUID === 'function') return window.crypto.randomUUID();
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c=>{
+          const r=Math.random()*16|0, v=c==='x'?r:(r&0x3|0x8);
+          return v.toString(16);
+        });
+      };
+      sessionStorage.setItem('kc_pending_assessment',JSON.stringify({
+        answers:scores.slice(),
+        requestId:makeUuid()
+      }));
+      window.location.href='/workspace/?savePreview=1';
+    }catch(_){
+      document.getElementById('savePreviewStatus').textContent='This browser could not keep the preview for sign-in. Your assessment result remains visible here; nothing has been saved.';
+    }
+  }
+  checkWorkspaceForSave();
   function setGauge(btn,val){
     const group = btn.parentElement;
     [...group.children].forEach(b=>b.classList.remove('active'));
@@ -1229,6 +1265,7 @@
     arc.style.transition = 'stroke-dashoffset .5s ease';
     arc.setAttribute('stroke-dashoffset', offset);
     gnum.textContent = Math.round(avg);
+    refreshSavePreview();
   }
 
   // faq accordion
