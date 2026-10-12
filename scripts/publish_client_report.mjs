@@ -28,7 +28,7 @@ const title = String(titleInput).trim();
 const reportType = String(typeInput).trim().toLowerCase();
 const summary = String(summaryInput || "Private client deliverable attached.").trim();
 if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || title.length < 3 || title.length > 180 ||
-    !/^[a-z][a-z0-9_-]{1,39}$/.test(reportType) || summary.length > 2000) {
+    !["assessment", "audit"].includes(reportType) || summary.length > 2000) {
   console.error("Invalid email, title, report type, or summary.");
   process.exit(2);
 }
@@ -40,6 +40,24 @@ const verifiedEmails = (user.emailAddresses || [])
   .map((entry) => String(entry.emailAddress || "").trim().toLowerCase());
 if (!verifiedEmails.includes(email)) {
   console.error("The supplied email is not verified on the specified Clerk account. No report was published.");
+  process.exit(2);
+}
+
+const productEnvName = reportType === "audit"
+  ? "DODO_PRODUCT_ID_AUDIT_9500"
+  : "DODO_PRODUCT_ID_ASSESSMENT_995";
+const productId = process.env[productEnvName];
+if (!productId) {
+  console.error(productEnvName + " must be configured before publishing a paid report.");
+  process.exit(2);
+}
+const sql = neon(process.env.DATABASE_URL);
+const entitlement = await sql.query(
+  "SELECT id FROM purchase_entitlements WHERE product_id = $1 AND lower(customer_email) = $2 AND status = 'active' LIMIT 1",
+  [productId, email]
+);
+if (!entitlement.length) {
+  console.error("No active matching purchase entitlement exists for this verified email. No report was published.");
   process.exit(2);
 }
 
@@ -73,7 +91,6 @@ const blob = await put(
     cacheControlMaxAge: 60,
   }
 );
-const sql = neon(process.env.DATABASE_URL);
 let reportId = null;
 try {
   const inserted = await sql.query(
