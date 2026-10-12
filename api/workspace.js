@@ -57,7 +57,8 @@ module.exports = async (req, res) => {
              recommendations, action_plan, created_at, updated_at
       FROM workspace_reports
       WHERE owner_clerk_user_id = ${identity.userId}
-         OR (cardinality(${emails}::text[]) > 0 AND lower(owner_email) = ANY(${emails}::text[]))
+         OR (owner_clerk_user_id IS NULL AND cardinality(${emails}::text[]) > 0
+             AND lower(owner_email) = ANY(${emails}::text[]))
       ORDER BY created_at DESC
       LIMIT 100
     `;
