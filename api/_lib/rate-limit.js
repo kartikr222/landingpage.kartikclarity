@@ -29,8 +29,7 @@ function createRateLimiter({ query, secret, now = () => Date.now(), cleanupEvery
     );
     const count = Number(rows && rows[0] && rows[0].count);
     if (!Number.isSafeInteger(count) || count < 1) throw new Error("Invalid rate-limit counter.");
-    operations += 1;
-    if (operations % cleanupEvery === 0) {
+    if (count % cleanupEvery === 0) {
       await query(
         "DELETE FROM rate_limit_counters WHERE ctid IN " +
         "(SELECT ctid FROM rate_limit_counters WHERE expires_at < now() ORDER BY expires_at LIMIT 100)",
