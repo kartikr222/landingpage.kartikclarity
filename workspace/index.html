@@ -143,10 +143,54 @@
             : "Access revoked following a refund or payment dispute";
         card.append(element("div", "report-meta", statusLabel + " · " + (purchase.purchased_at ? new Date(purchase.purchased_at).toLocaleDateString() : "Date not available")));
         card.append(element("p", "", status === "active"
-          ? "Your verified purchase is recorded. Download delivery will appear here only after secure file storage and the relevant deliverable are configured."
+          ? "Your verified purchase is recorded."
           : status === "review"
             ? "Access is paused while the payment dispute is reviewed. If you believe this is incorrect, contact support."
             : "This purchase no longer grants workspace access. Contact support if you believe the payment status is incorrect."));
+
+        const downloads = status === "active" && Array.isArray(purchase.downloads) ? purchase.downloads : [];
+        if (downloads.length) {
+          const section = element("div", "report-section");
+          section.append(element("strong", "", "Available downloads"));
+          const list = element("div", "actions");
+          downloads.forEach((file) => {
+            const button = element("button", "btn secondary", "Download " + (file.file_name || "file"));
+            button.type = "button";
+            button.addEventListener("click", async () => {
+              button.disabled = true;
+              const originalText = button.textContent;
+              button.textContent = "Preparing download…";
+              try {
+                const token = await window.Clerk.session.getToken();
+                const response = await fetch("/api/download?fileId=" + encodeURIComponent(file.id), {
+                  headers: { Authorization: "Bearer " + token },
+                  cache: "no-store"
+                });
+                if (!response.ok) throw new Error("Download unavailable");
+                const blob = await response.blob();
+                const objectUrl = URL.createObjectURL(blob);
+                const anchor = document.createElement("a");
+                anchor.href = objectUrl;
+                anchor.download = file.file_name || "download";
+                document.body.append(anchor);
+                anchor.click();
+                anchor.remove();
+                window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+                byId("workspace-save-status").textContent = "Your download has started.";
+              } catch (_) {
+                byId("workspace-save-status").textContent = "We couldn't prepare that download. Please refresh your workspace or contact support.";
+              } finally {
+                button.disabled = false;
+                button.textContent = originalText;
+              }
+            });
+            list.append(button);
+          });
+          section.append(list);
+          card.append(section);
+        } else if (status === "active") {
+          card.append(element("p", "small", "Your purchase is verified, but its deliverable has not been uploaded to secure storage yet. Contact support if you expected a file."));
+        }
         target.append(card);
       });
     }
