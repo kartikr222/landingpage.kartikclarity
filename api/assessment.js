@@ -1,5 +1,6 @@
 const { verifyToken, createClerkClient } = require("@clerk/backend");
 const { neon } = require("@neondatabase/serverless");
+const { clientIp, enforceRateLimit } = require("./_lib/rate-limit");
 
 const json = (res, status, body) => {
   res.statusCode = status;
@@ -69,6 +70,8 @@ module.exports = async (req, res) => {
       message: "Saving previews is not available yet. Your public assessment still works without signing in.",
     });
   }
+
+  if (!(await enforceRateLimit(req, res, [{ scope: "assessment-ip", identifier: clientIp(req), limit: 20, windowSeconds: 60 }], { failClosed: false }))) return;
 
   let identity;
   try {
