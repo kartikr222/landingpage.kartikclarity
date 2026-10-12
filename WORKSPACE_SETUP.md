@@ -46,7 +46,7 @@ The four product ID variables must contain actual product IDs from Dodo, not the
 ## Important current limitations
 
 - No production secrets or product IDs are included in this repository.
-- The signed-in user can save a directional preview of the public three-question assessment. This is not the full paid diagnostic. Other client reports are read-only from the customer UI; report authoring/upload for those deliverables is not implemented.
+- The signed-in user can save a directional preview of the public three-question assessment. This is not the full paid diagnostic. Personalized assessment/audit files can be published by a trusted operator script; there is no browser-based admin authoring dashboard.
 - Protected downloads require configured private Blob storage, an applied schema migration, and uploaded real deliverables; they are not available until those dependencies are ready.
 - Payment entitlements are linked to the normalized purchase email and are visible only when it matches an email verified on the signed-in Clerk account. Purchases made with another email need a verified support process; do not manually bypass ownership checks.
 - The webhook handles successful one-time payments for the four configured product IDs. Full refunds revoke access; partial refunds retain access; open/challenged disputes pause access; lost/accepted/expired disputes revoke access; won/cancelled disputes can restore access only from the pending-review state. Subscriptions are not implemented. Confirm these business rules match your refund policy before launch.
@@ -75,5 +75,7 @@ The protected download route uses Vercel Private Blob. It checks a valid Clerk s
 4. Confirm the product ID variables match the real Dodo product IDs in that environment. Use test-mode product IDs in Preview and live product IDs only in Production.
 5. Upload an actual approved deliverable with `node scripts/upload_private_product.mjs <product-id> <file-path> [display-name]`. The local environment needs `DATABASE_URL`, `BLOB_READ_WRITE_TOKEN`, and the matching `DODO_PRODUCT_ID_*` variable. Supported formats: PDF, ZIP, DOCX, XLSX; maximum 25 MiB. Do not upload placeholder content.
 6. Test an entitled customer, a different signed-in account, an unverified email, a refunded/revoked entitlement, a review-state entitlement, a fake file ID, and an unauthenticated request. Only the active entitled customer should receive the file.
+
+For a personalized paid assessment or audit, use `node scripts/publish_client_report.mjs <clerk-user-id> <verified-email> <title> <assessment|audit> <file-path> [summary]`. The script verifies the email on that Clerk account and checks for an active matching $995 assessment or $9,500 audit entitlement before publishing. The report record and its private file are tied to that Clerk user ID; product purchases cannot authorize access to another client's report.
 
 A successful code deployment alone does not make the workspace customer-ready. Keep `WORKSPACE_ENABLED` unset or `false` until authentication, database migration, signed Dodo webhooks, product mapping, private storage, real product files, and the complete end-to-end checks have passed. This repository does not contain the actual paid deliverables.
