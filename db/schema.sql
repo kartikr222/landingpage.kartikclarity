@@ -168,3 +168,6 @@ CREATE UNIQUE INDEX IF NOT EXISTS private_report_files_active_name_idx
   ON private_report_files (report_id, file_name) WHERE active = TRUE;
 CREATE INDEX IF NOT EXISTS private_report_files_owner_idx
   ON private_report_files (owner_clerk_user_id, active);
+
+CREATE INDEX IF NOT EXISTS private_report_files_product_idx
+  ON private_report_files (product_id, active);
