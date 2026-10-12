@@ -21,6 +21,7 @@ def read(path):
 config = read("api/config.js")
 workspace = read("api/workspace.js")
 webhook = read("api/webhooks/dodo.js")
+assessment = read("api/assessment.js")
 schema = read("db/schema.sql")
 ui = read("workspace/index.html")
 docs = read("WORKSPACE_SETUP.md")
@@ -36,6 +37,18 @@ check("process.env.WORKSPACE_ENABLED !== \"true\"" in workspace,
       "Private API must independently enforce the workspace release gate")
 check("CLERK_SECRET_KEY" not in ui and "DATABASE_URL" not in ui,
       "Browser UI must never contain server secrets or database URLs")
+check("workspaceAvailable && scores.every(s=>s!==null)" in read("index.html"),
+      "Homepage must only offer saving when workspace is configured and all preview questions are answered")
+check("process.env.WORKSPACE_ENABLED !== \"true\"" in assessment,
+      "Assessment save endpoint must remain disabled until workspace activation")
+check("verifyToken" in assessment and "req.headers.authorization" in assessment,
+      "Assessment saving must require a verified sign-in session")
+check("answers.length !== 3" in assessment and "[20, 50, 80]" in assessment,
+      "Assessment save endpoint must validate the exact three-question answer schema")
+check("source_request_id" in assessment and "workspace_reports_request_id_idx" in schema,
+      "Assessment saving must be idempotent per authenticated user and request")
+check("Directional preview score" in assessment and "not a full diagnosis" in assessment,
+      "Saved assessment preview must be clearly labelled as directional, not a full diagnosis")
 check("publishableKey: workspaceReady ? publishableKey : null" in config,
       "Only the publishable Clerk key may be returned to the browser")
 check("CLERK_SECRET_KEY" in docs and "DODO_WEBHOOK_SECRET" in docs,
