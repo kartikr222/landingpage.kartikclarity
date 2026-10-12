@@ -24,9 +24,18 @@ module.exports = async (req, res) => {
     return json(res, 503, { error: "Payment webhook is not configured." });
   }
 
+  const MAX_WEBHOOK_BODY_BYTES = 1024 * 1024;
   let rawBody = "";
+  let rawBodyBytes = 0;
   try {
-    for await (const chunk of req) rawBody += chunk.toString("utf8");
+    for await (const chunk of req) {
+      const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+      rawBodyBytes += buffer.length;
+      if (rawBodyBytes > MAX_WEBHOOK_BODY_BYTES) {
+        return json(res, 413, { error: "Webhook payload is too large." });
+      }
+      rawBody += buffer.toString("utf8");
+    }
   } catch (_) {
     return json(res, 400, { error: "Invalid request body." });
   }

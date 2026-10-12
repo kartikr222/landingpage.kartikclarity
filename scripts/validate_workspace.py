@@ -106,6 +106,10 @@ for env in (
           f"Missing explicit payment product mapping: {env}")
 check("bodyParser: false" in webhook,
       "Webhook body parsing must remain disabled so signature verification can use the raw payload")
+check("MAX_WEBHOOK_BODY_BYTES = 1024 * 1024" in webhook and
+      "rawBodyBytes > MAX_WEBHOOK_BODY_BYTES" in webhook and
+      "return json(res, 413" in webhook,
+      "Webhook must reject oversized payloads before buffering unbounded request bodies")
 
 # Data minimization and truthful feature states.
 check("owner_clerk_user_id TEXT" in schema and "owner_email TEXT" in schema,
