@@ -15,7 +15,9 @@ module.exports = (req, res) => {
   const secretKey = process.env.CLERK_SECRET_KEY || "";
   const databaseConfigured = Boolean(process.env.DATABASE_URL);
   const clerkConfigured = Boolean(publishableKey && secretKey);
-  const workspaceReady = clerkConfigured && databaseConfigured;
+  // Explicit release gate: set only after the DB schema is applied and smoke tests pass.
+  const explicitlyEnabled = process.env.WORKSPACE_ENABLED === "true";
+  const workspaceReady = explicitlyEnabled && clerkConfigured && databaseConfigured;
   const productIds = [
     process.env.DODO_PRODUCT_ID_WORKBOOK_19,
     process.env.DODO_PRODUCT_ID_TOOLKIT_27,
