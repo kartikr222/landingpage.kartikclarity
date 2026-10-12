@@ -1,5 +1,6 @@
 const { verifyToken, createClerkClient } = require("@clerk/backend");
 const { neon } = require("@neondatabase/serverless");
+const { clientIp, enforceRateLimit } = require("./_lib/rate-limit");
 
 const json = (res, status, body) => {
   res.statusCode = status;
@@ -43,6 +44,8 @@ module.exports = async (req, res) => {
       message: "The Client Workspace is not available yet. Please contact info.kartikclarity@gmail.com for help.",
     });
   }
+
+  if (!(await enforceRateLimit(req, res, [{ scope: "workspace-ip", identifier: clientIp(req), limit: 30, windowSeconds: 60 }], { failClosed: false }))) return;
 
   let identity;
   try {

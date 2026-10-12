@@ -6,6 +6,21 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: kartikclarity_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d kartikclarity_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgres://postgres:test@localhost:5432/kartikclarity_test
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -25,3 +40,5 @@ jobs:
           find api -type f -name '*.js' -print0 | xargs -0 -n1 node --check
           node --check scripts/upload_private_product.mjs
           node --check scripts/publish_client_report.mjs
+      - name: Test PostgreSQL rate limiter
+        run: node scripts/test_rate_limit.mjs

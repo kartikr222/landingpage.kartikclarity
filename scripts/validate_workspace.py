@@ -153,6 +153,25 @@ check('"/api/download"' in ui and '"/api/report-download"' in ui and '"?fileId="
 check('"svix"' in package and '"@clerk/backend"' in package and '"@neondatabase/serverless"' in package and '"@vercel/blob"' in package,
       "Required authentication, database, webhook and private storage packages must be declared")
 
+# Rate limiting must protect sensitive routes without storing raw identifiers.
+rate_limiter = read("api/_lib/rate-limit.js")
+check("createHmac" in rate_limiter and 'digest("hex")' in rate_limiter,
+      "Rate-limit identifiers must be HMAC hashed before persistence")
+check("ON CONFLICT (key_hash, window_start) DO UPDATE" in rate_limiter,
+      "Rate-limit counters must update atomically under concurrent requests")
+check("RATE_LIMIT_HASH_SECRET" in rate_limiter and "length < 32" in rate_limiter,
+      "Rate limiter must require a sufficiently long server-only HMAC secret")
+check("LIMIT 100" in rate_limiter and "expires_at < now()" in rate_limiter,
+      "Rate-limit cleanup must be bounded")
+check("rate_limit_counters" in schema and "PRIMARY KEY (key_hash, window_start)" in schema,
+      "Rate-limit schema must support atomic fixed-window counters")
+for route in ("api/webhooks/dodo.js", "api/workspace.js", "api/assessment.js", "api/download.js", "api/report-download.js"):
+    check("enforceRateLimit" in read(route), f"{route} must enforce rate limiting")
+check("failClosed: true" in download and "failClosed: true" in report_download,
+      "Protected downloads must fail closed if request protection is unavailable")
+check("RATE_LIMIT_HASH_SECRET" in docs,
+      "Setup guide must document the rate-limit HMAC secret")
+
 if errors:
     print(f"FAIL: {len(errors)} of {checks} workspace security checks failed")
     for error in errors:

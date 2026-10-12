@@ -1,5 +1,6 @@
 const { Webhook } = require("svix");
 const { neon } = require("@neondatabase/serverless");
+const { clientIp, enforceRateLimit } = require("../_lib/rate-limit");
 
 const json = (res, status, body) => {
   res.statusCode = status;
@@ -20,6 +21,7 @@ module.exports = async (req, res) => {
     res.setHeader("Allow", "POST");
     return json(res, 405, { error: "Method not allowed" });
   }
+  if (!(await enforceRateLimit(req, res, [{ scope: "dodo-webhook-ip", identifier: clientIp(req), limit: 120, windowSeconds: 60 }], { failClosed: false }))) return;
   if (!process.env.DODO_WEBHOOK_SECRET || !process.env.DATABASE_URL) {
     return json(res, 503, { error: "Payment webhook is not configured." });
   }
