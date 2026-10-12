@@ -34,7 +34,9 @@ module.exports = async (req, res) => {
     return json(res, 405, { error: "Method not allowed" });
   }
 
-  if (!process.env.CLERK_SECRET_KEY || !process.env.DATABASE_URL) {
+  if (process.env.WORKSPACE_ENABLED !== "true" ||
+      !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
+      !process.env.CLERK_SECRET_KEY || !process.env.DATABASE_URL) {
     return json(res, 503, {
       code: "WORKSPACE_NOT_CONFIGURED",
       message: "The Client Workspace is not available yet. Please contact info.kartikclarity@gmail.com for help.",
