@@ -21,5 +21,12 @@ jobs:
           python-version: "3.x"
       - name: Validate static site invariants
         run: python scripts/validate_site.py
+      - name: Validate workspace security invariants
+        run: python scripts/validate_workspace.py
+      - name: Check serverless API JavaScript syntax
+        run: |
+          node --check api/config.js
+          node --check api/workspace.js
+          node --check api/webhooks/dodo.js
       - name: Check patch whitespace
         run: git diff --check
