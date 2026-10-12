@@ -118,10 +118,26 @@ check("owner_clerk_user_id TEXT" in schema and "owner_email TEXT" in schema,
       "Reports must have an explicit owner")
 check("UNIQUE (provider, payment_id, product_id)" in schema,
       "Entitlement schema must prevent duplicate grants")
-check("downloadsAvailable: false" in workspace,
-      "Downloads must remain disabled until protected storage exists")
-check("downloadsAvailable" not in ui or "Download delivery will appear here only after secure file storage" in ui,
-      "UI must not promise downloadable files before secure delivery exists")
+check("private_product_files" in schema and "blob_pathname TEXT NOT NULL UNIQUE" in schema,
+      "Private product file metadata must be stored without public file URLs")
+check("verifyToken" in download and "authorizedParties" in download,
+      "Downloads must require a verified Clerk session from the production origin")
+check("active" in download and "lower(entitlement.customer_email)" in download,
+      "Downloads must require an active purchase for a verified email")
+check('get(rows[0].blob_pathname' in download and 'access: "private"' in download,
+      "Downloads must stream from private Blob storage rather than exposing a public URL")
+check('Cache-Control' in download and 'no-store' in download,
+      "Private downloads must not be cached")
+check("BLOB_READ_WRITE_TOKEN" in download and 'WORKSPACE_ENABLED !== "true"' in download,
+      "Download route must fail closed unless private storage and the workspace gate are configured")
+check('access: "private"' in uploader and "knownProductIds.includes(productId)" in uploader,
+      "Operator upload script must use private Blob and accept only explicitly mapped Dodo product IDs")
+check("private_product_files" in uploader and "25 * 1024 * 1024" in uploader,
+      "Product uploader must register file metadata and enforce the 25 MiB limit")
+check("downloadsAvailable: storageConfigured && purchases.some" in workspace,
+      "Workspace must expose downloads only when private files are mapped for an active purchase")
+check("/api/download?fileId=" in ui,
+      "Purchase UI must provide authenticated downloads without exposing private Blob URLs")
 check('"svix"' in package and '"@clerk/backend"' in package and '"@neondatabase/serverless"' in package,
       "Required authentication, database and webhook packages must be declared")
 
