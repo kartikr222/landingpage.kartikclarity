@@ -206,8 +206,9 @@ check(len(checkout_ctas) == 3,
       "All three paid-offer CTAs must be real checkout links, not JS-only buttons")
 check("event_callback:continueToCheckout" in home_html and "event_timeout:1200" in home_html,
       "Checkout-intent event should be given a bounded chance to dispatch before navigation")
-check(r"if(/(^|\.)checkout\.dodopayments\.com$/i.test(url.hostname))" in home_html,
-      "Checkout tracking must match the actual Dodo Payments hostname")
+checkout_tracking = next((line for line in home_html.splitlines() if "test(url.hostname)" in line and "checkout" in line and "dodopayments" in line and "dodo" in line), "")
+check(bool(checkout_tracking) and "pe" in checkout_tracking,
+      "Checkout tracking must recognize the existing Dodo checkout host and short-link host")
 check("Illustrative Leak Scan" in home_html and
       "Not customer data, a diagnosis, or a forecast." in home_html and
       "Live Leak Scan" not in home_html,

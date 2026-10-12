@@ -1,0 +1,14 @@
+{
+  "name": "kartik-clarity-site",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Kartik Clarity public website and private client workspace APIs",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@clerk/backend": "^2.25.0",
+    "@neondatabase/serverless": "^1.0.2",
+    "svix": "^1.80.0"
+  }
+}

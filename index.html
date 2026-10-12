@@ -306,6 +306,7 @@
   .gauge-num .n{font-family:'IBM Plex Mono',monospace;font-size:38px;color:var(--cyan-400);}
   .gauge-num .l{font-size:11px;color:#aeb9d4;letter-spacing:0.06em;text-transform:uppercase;margin-top:2px;}
   .assess-right p{font-size:13px;color:#c9d3e8;margin-top:22px;max-width:280px;line-height:1.6;}
+  #savePreviewStatus{font-size:12px;color:#c9d3e8;margin-top:10px;}
 
   /* ---------- Value ladder ---------- */
   .ladder{background:var(--white);}
@@ -568,7 +569,7 @@
 <header>
   <div class="wrap header-inner">
     <a href="#top" class="brand">
-      <img src="/logo-circle.jpeg" alt="" width="44" height="44" decoding="async">
+      <img src="/logo-circle.jpeg" alt="Kartik Clarity logo" width="44" height="44" decoding="async">
       <span class="brand-name">Kartik Clarity<sup class="brand-tm">™</sup></span>
     </a>
     <nav class="main-nav">
@@ -781,6 +782,8 @@
           <div class="gauge-num"><div class="n" id="gaugeNum">--</div><div class="l">Leak Score</div></div>
         </div>
         <p>This preview score is directional. The full Revenue Leak Score inside the Workbook breaks it down by all five zones with a prioritized action list.</p>
+        <button id="savePreviewBtn" class="btn-primary" type="button" hidden onclick="savePreviewToWorkspace()">Save preview to My Reports</button>
+        <p id="savePreviewStatus" aria-live="polite"></p>
       </div>
     </div>
   </div>
@@ -997,8 +1000,9 @@
     <button class="modal-close" onclick="closeSignin()" aria-label="Close">&times;</button>
     <span class="eyebrow" style="margin-bottom:6px;">Kartik Clarity™</span>
     <h3>Account access</h3>
-    <p class="modal-sub">Email-based sign-in is not connected yet. When account access is enabled, you will be able to sign in with any valid email address; a work email will not be required. A business email may be requested separately when checking fit for a business service.</p>
-    <a class="btn-primary" style="width:100%;justify-content:center;display:flex;text-decoration:none;" href="mailto:info.kartikclarity@gmail.com?subject=Kartik%20Clarity%20account%20or%20order%20question">Email about access or an order</a>
+    <p class="modal-sub">Client Workspace setup is in progress. Check its current availability below; secure sign-in will appear only after authentication and private report storage are configured. When enabled, any verified email address can be used—no work email is required.</p>
+    <a class="btn-primary" style="width:100%;justify-content:center;display:flex;text-decoration:none;margin-bottom:10px;" href="/workspace/">Check Client Workspace status</a>
+    <a class="btn-primary" style="width:100%;justify-content:center;display:flex;text-decoration:none;background:#fff;color:var(--navy-950);border:1px solid var(--hairline);" href="mailto:info.kartikclarity@gmail.com?subject=Kartik%20Clarity%20account%20or%20order%20question">Email about access or an order</a>
     <p class="modal-legal">Please do not email passwords, payment-card details or confidential customer records. See the <a href="privacy-policy.html">Privacy Policy</a> and <a href="terms-of-service.html">Terms of Service</a>.</p>
   </div>
 </div>
@@ -1215,6 +1219,39 @@
   const gnum = document.getElementById('gaugeNum');
   const CIRC = 502.4;
   let scores = [null,null,null];
+  let workspaceAvailable = false;
+  function refreshSavePreview(){
+    const button = document.getElementById('savePreviewBtn');
+    if(button) button.hidden = !(workspaceAvailable && scores.every(s=>s!==null));
+  }
+  async function checkWorkspaceForSave(){
+    try{
+      const response = await fetch('/api/config',{cache:'no-store'});
+      const config = await response.json();
+      workspaceAvailable = response.ok && config.workspaceReady === true;
+    }catch(_){ workspaceAvailable = false; }
+    refreshSavePreview();
+  }
+  function savePreviewToWorkspace(){
+    if(!workspaceAvailable || !scores.every(s=>s!==null)) return;
+    try{
+      const makeUuid = () => {
+        if(window.crypto && typeof window.crypto.randomUUID === 'function') return window.crypto.randomUUID();
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c=>{
+          const r=Math.random()*16|0, v=c==='x'?r:(r&0x3|0x8);
+          return v.toString(16);
+        });
+      };
+      sessionStorage.setItem('kc_pending_assessment',JSON.stringify({
+        answers:scores.slice(),
+        requestId:makeUuid()
+      }));
+      window.location.href='/workspace/?savePreview=1';
+    }catch(_){
+      document.getElementById('savePreviewStatus').textContent='This browser could not keep the preview for sign-in. Your assessment result remains visible here; nothing has been saved.';
+    }
+  }
+  checkWorkspaceForSave();
   function setGauge(btn,val){
     const group = btn.parentElement;
     [...group.children].forEach(b=>b.classList.remove('active'));
@@ -1228,6 +1265,7 @@
     arc.style.transition = 'stroke-dashoffset .5s ease';
     arc.setAttribute('stroke-dashoffset', offset);
     gnum.textContent = Math.round(avg);
+    refreshSavePreview();
   }
 
   // faq accordion
