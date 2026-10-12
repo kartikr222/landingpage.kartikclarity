@@ -66,6 +66,10 @@ check("owner_clerk_user_id IS NULL" in workspace,
 check("lower(customer_email) IN (${emailPlaceholders})" in workspace and
       "[identity.userId, ...emails]" in workspace,
       "Report and purchase reads must use parameterized verified-email ownership filters")
+check("`$${index + 2}`" in workspace and "`$${index + 1}`" in workspace,
+      "SQL placeholder builders must emit PostgreSQL $N parameters, not bare numbers")
+check("DO $$" in schema and "$$;" in schema,
+      "PostgreSQL migration blocks must use valid dollar-quote delimiters")
 check('meta name="robots" content="noindex,nofollow"' in ui,
       "Workspace UI must be excluded from search indexing")
 

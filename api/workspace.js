@@ -58,7 +58,7 @@ module.exports = async (req, res) => {
     // Use individually parameterized placeholders rather than relying on driver-specific
     // JavaScript-array serialization for PostgreSQL ANY(...).
     const reportEmailClause = emails.length
-      ? `lower(owner_email) IN (${emails.map((_, index) => `${index + 2}`).join(", ")})`
+      ? `lower(owner_email) IN (${emails.map((_, index) => `$${index + 2}`).join(", ")})`
       : "FALSE";
     const reports = await sql.query(
       `SELECT id, title, report_type, score, summary, findings,
@@ -80,7 +80,7 @@ module.exports = async (req, res) => {
     const purchasesAvailable = Boolean(process.env.DODO_WEBHOOK_SECRET && productsConfigured);
     let purchases = [];
     if (purchasesAvailable && emails.length) {
-      const emailPlaceholders = emails.map((_, index) => `${index + 1}`).join(", ");
+      const emailPlaceholders = emails.map((_, index) => `$${index + 1}`).join(", ");
       purchases = await sql.query(
         `SELECT entitlement_key, product_name, purchased_at, status, status_reason
          FROM purchase_entitlements
