@@ -21,7 +21,7 @@ async function identity(req) {
   const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
   const user = await clerk.users.getUser(claims.sub);
   const emails = (user.emailAddresses || []).filter((e) => e.verification && e.verification.status === "verified");
-  return { userId: claims.sub, hasVerifiedEmail: emails.length > 0 };
+  return { userId: claims.sub, emails: emails.map((entry) => String(entry.emailAddress || "").trim().toLowerCase()).filter(Boolean) };
 }
 
 module.exports = async (req, res) => {
@@ -33,14 +33,17 @@ module.exports = async (req, res) => {
   if (!/^[1-9]\d{0,18}$/.test(fileId)) return json(res, 404, { error: "File not found." });
   let user;
   try { user = await identity(req); } catch (_) { return json(res, 401, { error: "A valid sign-in session is required." }); }
-  if (!user || !user.hasVerifiedEmail) return json(res, 401, { error: "A verified sign-in session is required." });
+  if (!user || !user.emails.length) return json(res, 401, { error: "A verified sign-in session is required." });
   try {
     const sql = neon(process.env.DATABASE_URL);
+    const emailPlaceholders = user.emails.map((_, index) => "$" + (index + 3)).join(", ");
     const rows = await sql.query(
       "SELECT f.blob_pathname, f.file_name, f.content_type FROM private_report_files f " +
       "JOIN workspace_reports r ON r.id = f.report_id " +
-      "WHERE f.id = $1 AND f.active = TRUE AND f.owner_clerk_user_id = $2 AND r.owner_clerk_user_id = $2 LIMIT 1",
-      [fileId, user.userId]
+      "WHERE f.id = $1 AND f.active = TRUE AND f.owner_clerk_user_id = $2 AND r.owner_clerk_user_id = $2 " +
+      "AND EXISTS (SELECT 1 FROM purchase_entitlements e WHERE e.product_id = f.product_id " +
+      "AND e.provider = 'dodo' AND e.status = 'active' AND lower(e.customer_email) IN (" + emailPlaceholders + ")) LIMIT 1",
+      [fileId, user.userId, ...user.emails]
     );
     if (!rows.length) return json(res, 404, { error: "File not found." });
     const { get } = await import("@vercel/blob");
