@@ -124,6 +124,12 @@ check("UNIQUE (provider, payment_id, product_id)" in schema,
       "Entitlement schema must prevent duplicate grants")
 check("private_product_files" in schema and "blob_pathname TEXT NOT NULL UNIQUE" in schema,
       "Private product file metadata must be stored without public file URLs")
+check("private_report_files" in schema and "REFERENCES workspace_reports(id) ON DELETE CASCADE" in schema,
+      "Private report files must be linked to a specific report record")
+check("f.owner_clerk_user_id = $2" in report_download and "r.owner_clerk_user_id = $2" in report_download,
+      "A report file must be downloadable only by its assigned Clerk account")
+check("verifiedEmails.includes(email)" in report_publisher and "No active matching purchase entitlement" in report_publisher,
+      "Paid report publishing must verify the owner's email and active product entitlement")
 check("verifyToken" in download and "authorizedParties" in download,
       "Downloads must require a verified Clerk session from the production origin")
 check("active" in download and "lower(entitlement.customer_email)" in download,
