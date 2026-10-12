@@ -43,6 +43,9 @@ check("process.env.WORKSPACE_ENABLED !== \"true\"" in assessment,
       "Assessment save endpoint must remain disabled until workspace activation")
 check("verifyToken" in assessment and "req.headers.authorization" in assessment,
       "Assessment saving must require a verified sign-in session")
+check('authorizedParties: ["https://kartikclarity.vercel.app"]' in assessment and
+      'authorizedParties: ["https://kartikclarity.vercel.app"]' in workspace,
+      "Clerk tokens must be restricted to the production origin to reduce cross-origin token reuse")
 check("answers.length !== 3" in assessment and "[20, 50, 80]" in assessment,
       "Assessment save endpoint must validate the exact three-question answer schema")
 check("source_request_id" in assessment and "workspace_reports_request_id_idx" in schema,
