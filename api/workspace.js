@@ -55,13 +55,14 @@ module.exports = async (req, res) => {
   try {
     const sql = neon(process.env.DATABASE_URL);
     const emails = identity.emails;
+    const storageConfigured = Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 
     // Use individually parameterized placeholders rather than relying on driver-specific
     // JavaScript-array serialization for PostgreSQL ANY(...).
     const reportEmailClause = emails.length
       ? `lower(owner_email) IN (${emails.map((_, index) => `$${index + 2}`).join(", ")})`
       : "FALSE";
-    const reports = await sql.query(
+    let reports = await sql.query(
       `SELECT id, title, report_type, score, summary, findings,
               recommendations, action_plan, created_at, updated_at
        FROM workspace_reports
@@ -72,6 +73,28 @@ module.exports = async (req, res) => {
       [identity.userId, ...emails]
     );
 
+    let reportFiles = [];
+    const reportIds = reports.map((report) => report.id).filter(Boolean);
+    if (storageConfigured && reportIds.length) {
+      const reportPlaceholders = reportIds.map((_, index) => "$" + (index + 2)).join(", ");
+      reportFiles = await sql.query(
+        "SELECT id, report_id, file_name FROM private_report_files " +
+        "WHERE active = TRUE AND owner_clerk_user_id = $1 AND report_id IN (" + reportPlaceholders + ") " +
+        "ORDER BY report_id, file_name LIMIT 200",
+        [identity.userId, ...reportIds]
+      );
+    }
+    const filesByReport = new Map();
+    for (const file of reportFiles) {
+      const key = String(file.report_id);
+      if (!filesByReport.has(key)) filesByReport.set(key, []);
+      filesByReport.get(key).push({ id: file.id, file_name: file.file_name });
+    }
+    reports = reports.map((report) => ({
+      ...report,
+      downloads: filesByReport.get(String(report.id)) || [],
+    }));
+
     const productsConfigured = [
       process.env.DODO_PRODUCT_ID_WORKBOOK_19,
       process.env.DODO_PRODUCT_ID_TOOLKIT_27,
@@ -79,7 +102,6 @@ module.exports = async (req, res) => {
       process.env.DODO_PRODUCT_ID_AUDIT_9500,
     ].some(Boolean);
     const purchasesAvailable = Boolean(process.env.DODO_WEBHOOK_SECRET && productsConfigured);
-    const storageConfigured = Boolean(process.env.BLOB_READ_WRITE_TOKEN);
     let purchases = [];
     if (purchasesAvailable && emails.length) {
       const emailPlaceholders = emails.map((_, index) => "$" + (index + 1)).join(", ");
@@ -122,7 +144,7 @@ module.exports = async (req, res) => {
       capabilities: {
         reportsAvailable: true,
         purchasesAvailable,
-        downloadsAvailable: storageConfigured && purchases.some((purchase) => purchase.downloads.length > 0),
+        downloadsAvailable: storageConfigured && (purchases.some((purchase) => purchase.downloads.length > 0) || reports.some((report) => report.downloads.length > 0)),
       },
     });
   } catch (_) {
