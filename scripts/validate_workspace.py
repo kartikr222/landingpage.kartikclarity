@@ -50,8 +50,9 @@ check("owner_clerk_user_id = ${identity.userId}" in workspace,
       "Report reads must be scoped to the authenticated Clerk user")
 check("owner_clerk_user_id IS NULL" in workspace,
       "Legacy email ownership must not override a report's explicit user owner")
-check("lower(customer_email) = ANY(${emails}::text[])" in workspace,
-      "Purchases must be limited to verified account email addresses")
+check("lower(customer_email) IN (${emailPlaceholders})" in workspace and
+      "[identity.userId, ...emails]" in workspace,
+      "Report and purchase reads must use parameterized verified-email ownership filters")
 check('meta name="robots" content="noindex,nofollow"' in ui,
       "Workspace UI must be excluded from search indexing")
 
