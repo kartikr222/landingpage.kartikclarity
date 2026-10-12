@@ -7,6 +7,7 @@ The public HTML site and free assessment remain public. The workspace is deliber
 - `/workspace/`: setup-aware client workspace UI. It does not display a sign-in form until Clerk and PostgreSQL are configured.
 - `/api/config`: exposes only public setup status and the Clerk publishable key (never the secret).
 - `/api/workspace`: server-side verified Clerk token, verified email lookup, and per-user report/purchase queries.
+- `/api/assessment`: optionally saves the public three-question directional preview after sign-in; the assessment itself remains usable without an account. The score and recommendations are derived server-side from the three allowed answer values.
 - `/api/webhooks/dodo`: verifies signed Dodo webhook events, grants only explicitly mapped successful payments, and tracks full refunds and dispute lifecycle changes.
 - `/db/schema.sql`: private report and purchase entitlement tables.
 
@@ -45,7 +46,7 @@ The four product ID variables must contain actual product IDs from Dodo, not the
 ## Important current limitations
 
 - No production secrets or product IDs are included in this repository.
-- Reports are read-only from the customer UI. Report authoring/upload is not implemented.
+- The signed-in user can save a directional preview of the public three-question assessment. This is not the full paid diagnostic. Other client reports are read-only from the customer UI; report authoring/upload for those deliverables is not implemented.
 - Downloads are intentionally disabled; there is no public file URL.
 - Payment entitlements are linked to the normalized purchase email and are visible only when it matches an email verified on the signed-in Clerk account. Purchases made with another email need a verified support process; do not manually bypass ownership checks.
 - The webhook handles successful one-time payments for the four configured product IDs. Full refunds revoke access; partial refunds retain access; open/challenged disputes pause access; lost/accepted/expired disputes revoke access; won/cancelled disputes can restore access only from the pending-review state. Subscriptions are not implemented. Confirm these business rules match your refund policy before launch.
@@ -56,6 +57,8 @@ The four product ID variables must contain actual product IDs from Dodo, not the
 ## Local smoke checks
 
 - `GET /api/config` should return setup booleans without secret values.
+- The homepage Save preview button appears only when the workspace release gate is enabled and all three preview questions have been answered; the free assessment remains public without login.
+- `POST /api/assessment` requires a verified Clerk session, exactly three allowed answer values, and a UUID request ID; retries with the same request ID must not create duplicate preview reports.
 - Before configuration or while `WORKSPACE_ENABLED` is not `true`, `GET /api/workspace` returns HTTP 503 and no sign-in form is shown.
 - After Clerk and DB configuration, unauthenticated `GET /api/workspace` returns HTTP 401.
 - An authenticated user gets only their own reports and entitlements matching their verified email addresses.
