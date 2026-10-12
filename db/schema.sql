@@ -1,5 +1,5 @@
--- Run this migration against the managed PostgreSQL database before enabling the workspace.
--- Report content is private business/customer data. Never place credentials or card data here.
+-- Run this migration against managed PostgreSQL before enabling the workspace.
+-- Report content is private business/customer data. Never store credentials or card data.
 
 CREATE TABLE IF NOT EXISTS workspace_reports (
   id BIGSERIAL PRIMARY KEY,
@@ -31,13 +31,27 @@ CREATE TABLE IF NOT EXISTS purchase_entitlements (
   entitlement_key TEXT NOT NULL,
   product_name TEXT NOT NULL,
   customer_email TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'active'
+    CHECK (status IN ('active', 'review', 'revoked')),
+  status_reason TEXT,
+  status_updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   purchased_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE (provider, payment_id, product_id)
 );
 
+-- Safe additive migration if this script is run against an earlier draft schema.
+ALTER TABLE purchase_entitlements
+  ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'active';
+ALTER TABLE purchase_entitlements
+  ADD COLUMN IF NOT EXISTS status_reason TEXT;
+ALTER TABLE purchase_entitlements
+  ADD COLUMN IF NOT EXISTS status_updated_at TIMESTAMPTZ NOT NULL DEFAULT now();
+
 CREATE INDEX IF NOT EXISTS purchase_entitlements_email_idx
   ON purchase_entitlements (lower(customer_email), purchased_at DESC);
+CREATE INDEX IF NOT EXISTS purchase_entitlements_status_idx
+  ON purchase_entitlements (status, purchased_at DESC);
 
--- Reports can be inserted by a trusted operator/service after verifying client ownership.
--- Do not add a public report-upload endpoint without server-side authorization and validation.
+-- Reports can be inserted only by a trusted, access-controlled operator/service
+-- after verifying client ownership. No public report-upload endpoint is provided.
