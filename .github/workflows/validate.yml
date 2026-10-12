@@ -14,6 +14,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Install declared runtime dependencies
+        run: npm install --ignore-scripts --no-audit --no-fund
       - name: Validate public website
         run: python scripts/validate_site.py
       - name: Validate workspace security invariants
