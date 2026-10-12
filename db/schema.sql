@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS payment_lifecycle (
   PRIMARY KEY (provider, payment_id)
 );
 
-DO $
+DO $$
 BEGIN
   IF NOT EXISTS (
     SELECT 1 FROM pg_constraint
@@ -82,7 +82,7 @@ BEGIN
       CHECK (status IN ('active', 'review', 'revoked'));
   END IF;
 END
-$;
+$$;
 
 -- Reports can be inserted only by a trusted, access-controlled operator/service
 -- after verifying client ownership. No public report-upload endpoint is provided.
