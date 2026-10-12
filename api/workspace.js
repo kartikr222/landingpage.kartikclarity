@@ -15,6 +15,7 @@ async function getIdentity(req) {
 
   const claims = await verifyToken(match[1], {
     secretKey: process.env.CLERK_SECRET_KEY,
+    authorizedParties: ["https://kartikclarity.vercel.app"],
   });
   if (!claims || !claims.sub) return null;
 
