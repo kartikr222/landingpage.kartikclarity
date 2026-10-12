@@ -79,3 +79,16 @@ The protected download route uses Vercel Private Blob. It checks a valid Clerk s
 For a personalized paid assessment or audit, use `node scripts/publish_client_report.mjs <clerk-user-id> <verified-email> <title> <assessment|audit> <file-path> [summary]`. The script verifies the email on that Clerk account and checks for an active matching $995 assessment or $9,500 audit entitlement before publishing. The report record and its private file are tied to that Clerk user ID; product purchases cannot authorize access to another client's report.
 
 A successful code deployment alone does not make the workspace customer-ready. Keep `WORKSPACE_ENABLED` unset or `false` until authentication, database migration, signed Dodo webhooks, product mapping, private storage, real product files, and the complete end-to-end checks have passed. This repository does not contain the actual paid deliverables.
+
+
+## API abuse protection
+
+Apply the updated `db/schema.sql` and configure `RATE_LIMIT_HASH_SECRET` as a random server-only secret of at least 32 characters in each environment where request limits should operate. Never commit its value. Identifiers are HMAC-SHA256 hashed before storage; raw IP addresses and Clerk user IDs are not persisted.
+
+- Dodo webhook: 120 requests/minute/IP; limiter errors fail open so delivery is not dropped solely by the limiter.
+- Workspace API: 30 requests/minute/IP; limiter errors fail open, while auth and database checks remain enforced.
+- Assessment-save API: 20 requests/minute/IP; limiter errors fail open, while auth and validation remain enforced.
+- Product and report downloads: 20 requests/minute/IP and 60 requests/10 minutes/verified Clerk user; limiter errors fail closed with HTTP 503.
+- Exceeded limits return HTTP 429 with `Retry-After`. Expired-counter cleanup is bounded to 100 rows per cleanup run.
+
+Keep `WORKSPACE_ENABLED` unset or `false` until the updated schema, rate limiter, authentication, payments, storage, and download smoke tests pass.
