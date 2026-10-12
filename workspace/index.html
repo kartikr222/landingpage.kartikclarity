@@ -63,7 +63,7 @@
 
     <section id="dashboard" hidden>
       <div class="dashboard-head">
-        <div><div class="eyebrow">Your private workspace</div><h1 style="font-size:38px;margin-bottom:6px">Welcome back</h1><p class="small" id="user-email"></p></div>
+        <div><div class="eyebrow">Your private workspace</div><h1 style="font-size:38px;margin-bottom:6px">Welcome back</h1><p class="small" id="user-email"></p><p class="small" id="workspace-save-status" aria-live="polite"></p></div>
         <div id="user-button"></div>
       </div>
       <div class="grid">
@@ -150,6 +150,43 @@
         target.append(card);
       });
     }
+    async function savePendingAssessment() {
+      let raw;
+      try { raw = sessionStorage.getItem("kc_pending_assessment"); } catch (_) { return "This browser could not access the pending preview. It has not been confirmed as saved."; }
+      if (!raw) return null;
+
+      let payload;
+      try { payload = JSON.parse(raw); } catch (_) { return "The pending preview could not be read. It has not been saved."; }
+      try {
+        const token = await window.Clerk.session.getToken();
+        const response = await fetch("/api/assessment", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token
+          },
+          body: JSON.stringify(payload),
+          cache: "no-store"
+        });
+        const body = await response.json().catch(() => ({}));
+        if (!response.ok || !body.saved) {
+          return body.message || body.error || "We couldn't confirm that your preview was saved. It remains in this browser tab; please try again.";
+        }
+        sessionStorage.removeItem("kc_pending_assessment");
+        return body.duplicate
+          ? "This preview was already saved to your reports."
+          : "Your directional preview has been saved to My Reports.";
+      } catch (_) {
+        return "We couldn't confirm that your preview was saved. It remains in this browser tab; please try again.";
+      }
+    }
+
+    async function enterWorkspace() {
+      const saveMessage = await savePendingAssessment();
+      await loadWorkspace();
+      if (saveMessage) byId("workspace-save-status").textContent = saveMessage;
+    }
+
     async function loadWorkspace() {
       const token = await window.Clerk.session.getToken();
       const response = await fetch("/api/workspace", {
@@ -208,12 +245,12 @@
         try {
           await window.Clerk.load({ publishableKey: config.publishableKey });
           if (window.Clerk.user) {
-            await loadWorkspace();
+            await enterWorkspace();
           } else {
             window.Clerk.mountSignIn(byId("sign-in"), { routing: "hash" });
             window.Clerk.addListener(async (resources) => {
               if (resources && resources.user) {
-                try { await loadWorkspace(); } catch (_) {
+                try { await enterWorkspace(); } catch (_) {
                   state("Unable to load", "We couldn’t load your workspace", "Please refresh the page and try again.", true);
                 }
               }
