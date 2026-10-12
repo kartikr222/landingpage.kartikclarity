@@ -138,8 +138,8 @@ check("downloadsAvailable: storageConfigured && purchases.some" in workspace,
       "Workspace must expose downloads only when private files are mapped for an active purchase")
 check("/api/download?fileId=" in ui,
       "Purchase UI must provide authenticated downloads without exposing private Blob URLs")
-check('"svix"' in package and '"@clerk/backend"' in package and '"@neondatabase/serverless"' in package,
-      "Required authentication, database and webhook packages must be declared")
+check('"svix"' in package and '"@clerk/backend"' in package and '"@neondatabase/serverless"' in package and '"@vercel/blob"' in package,
+      "Required authentication, database, webhook and private storage packages must be declared")
 
 if errors:
     print(f"FAIL: {len(errors)} of {checks} workspace security checks failed")
