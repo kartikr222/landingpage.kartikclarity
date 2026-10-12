@@ -290,6 +290,7 @@ try:
         for h in (site_rule or {}).get("headers", [])
     }
     required_headers = {
+        "strict-transport-security": "max-age=31536000",
         "x-content-type-options": "nosniff",
         "referrer-policy": "strict-origin-when-cross-origin",
         "x-frame-options": "DENY",
