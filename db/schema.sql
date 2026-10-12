@@ -53,5 +53,29 @@ CREATE INDEX IF NOT EXISTS purchase_entitlements_email_idx
 CREATE INDEX IF NOT EXISTS purchase_entitlements_status_idx
   ON purchase_entitlements (status, purchased_at DESC);
 
+-- Payment-level state protects against duplicate and out-of-order webhook delivery.
+-- A refund/dispute delivered before payment.succeeded must never result in a grant.
+CREATE TABLE IF NOT EXISTS payment_lifecycle (
+  provider TEXT NOT NULL CHECK (provider = 'dodo'),
+  payment_id TEXT NOT NULL,
+  status TEXT NOT NULL CHECK (status IN ('active', 'review', 'revoked')),
+  status_reason TEXT NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (provider, payment_id)
+);
+
+DO $
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'purchase_entitlements_status_check'
+  ) THEN
+    ALTER TABLE purchase_entitlements
+      ADD CONSTRAINT purchase_entitlements_status_check
+      CHECK (status IN ('active', 'review', 'revoked'));
+  END IF;
+END
+$;
+
 -- Reports can be inserted only by a trusted, access-controlled operator/service
 -- after verifying client ownership. No public report-upload endpoint is provided.
