@@ -128,6 +128,8 @@ check("private_report_files" in schema and "REFERENCES workspace_reports(id) ON 
       "Private report files must be linked to a specific report record")
 check("f.owner_clerk_user_id = $2" in report_download and "r.owner_clerk_user_id = $2" in report_download,
       "A report file must be downloadable only by its assigned Clerk account")
+check("e.product_id = f.product_id" in report_download and "e.status = 'active'" in report_download,
+      "A report download must recheck the active paid entitlement at download time")
 check("verifiedEmails.includes(email)" in report_publisher and "No active matching purchase entitlement" in report_publisher,
       "Paid report publishing must verify the owner's email and active product entitlement")
 check("verifyToken" in download and "authorizedParties" in download,
