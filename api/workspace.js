@@ -62,20 +62,27 @@ module.exports = async (req, res) => {
       LIMIT 100
     `;
 
-    const purchases = await sql`
+    const productsConfigured = [
+      process.env.DODO_PRODUCT_ID_WORKBOOK_19,
+      process.env.DODO_PRODUCT_ID_TOOLKIT_27,
+      process.env.DODO_PRODUCT_ID_ASSESSMENT_995,
+      process.env.DODO_PRODUCT_ID_AUDIT_9500,
+    ].some(Boolean);
+    const purchasesAvailable = Boolean(process.env.DODO_WEBHOOK_SECRET && productsConfigured);
+    const purchases = purchasesAvailable ? await sql`
       SELECT entitlement_key, product_name, purchased_at
       FROM purchase_entitlements
       WHERE lower(customer_email) = ANY(${emails}::text[])
       ORDER BY purchased_at DESC
       LIMIT 100
-    `;
+    ` : [];
 
     return json(res, 200, {
       reports,
       purchases,
       capabilities: {
         reportsAvailable: true,
-        purchasesAvailable: Boolean(process.env.DODO_WEBHOOK_SECRET),
+        purchasesAvailable,
         downloadsAvailable: false,
       },
     });
