@@ -21,6 +21,10 @@ def read(path):
 config = read("api/config.js")
 workspace = read("api/workspace.js")
 webhook = read("api/webhooks/dodo.js")
+download = read("api/download.js")
+report_download = read("api/report-download.js")
+uploader = read("scripts/upload_private_product.mjs")
+report_publisher = read("scripts/publish_client_report.mjs")
 assessment = read("api/assessment.js")
 schema = read("db/schema.sql")
 ui = read("workspace/index.html")
@@ -66,10 +70,10 @@ check("owner_clerk_user_id = $1" in workspace and "[identity.userId, ...emails]"
       "Report reads must be scoped to the authenticated Clerk user with a parameterized query")
 check("owner_clerk_user_id IS NULL" in workspace,
       "Legacy email ownership must not override a report's explicit user owner")
-check("lower(customer_email) IN (${emailPlaceholders})" in workspace and
-      "[identity.userId, ...emails]" in workspace,
-      "Report and purchase reads must use parameterized verified-email ownership filters")
-check("`$${index + 2}`" in workspace and "`$${index + 1}`" in workspace,
+check('"FROM purchase_entitlements WHERE lower(customer_email) IN ("' in workspace and
+      'ORDER BY purchased_at DESC LIMIT 100' in workspace and 'emails' in workspace,
+      "Purchase reads must use parameterized verified-email ownership filters")
+check("index + 2" in workspace and '"$" + (index + 1)' in workspace,
       "SQL placeholder builders must emit PostgreSQL $N parameters, not bare numbers")
 check("DO $$" in schema and "$$;" in schema,
       "PostgreSQL migration blocks must use valid dollar-quote delimiters")
@@ -88,6 +92,8 @@ check("ON CONFLICT (provider, payment_id, product_id)" in webhook,
       "Repeated webhook deliveries must be idempotent")
 check("payment_lifecycle" in webhook and "payment_lifecycle" in schema,
       "Payment lifecycle must protect against out-of-order refund/dispute events")
+check("FROM payment_lifecycle AS lifecycle" in webhook and "Reconcile after inserts" in webhook,
+      "Webhook must reconcile payment state after inserting entitlement records")
 check('event.type === "refund.succeeded"' in webhook,
       "Successful refunds must be handled")
 check('data.is_partial === true' in webhook,
@@ -116,12 +122,36 @@ check("owner_clerk_user_id TEXT" in schema and "owner_email TEXT" in schema,
       "Reports must have an explicit owner")
 check("UNIQUE (provider, payment_id, product_id)" in schema,
       "Entitlement schema must prevent duplicate grants")
-check("downloadsAvailable: false" in workspace,
-      "Downloads must remain disabled until protected storage exists")
-check("downloadsAvailable" not in ui or "Download delivery will appear here only after secure file storage" in ui,
-      "UI must not promise downloadable files before secure delivery exists")
-check('"svix"' in package and '"@clerk/backend"' in package and '"@neondatabase/serverless"' in package,
-      "Required authentication, database and webhook packages must be declared")
+check("private_product_files" in schema and "blob_pathname TEXT NOT NULL UNIQUE" in schema,
+      "Private product file metadata must be stored without public file URLs")
+check("private_report_files" in schema and "REFERENCES workspace_reports(id) ON DELETE CASCADE" in schema,
+      "Private report files must be linked to a specific report record")
+check("f.owner_clerk_user_id = $2" in report_download and "r.owner_clerk_user_id = $2" in report_download,
+      "A report file must be downloadable only by its assigned Clerk account")
+check("e.product_id = f.product_id" in report_download and "e.status = 'active'" in report_download,
+      "A report download must recheck the active paid entitlement at download time")
+check("verifiedEmails.includes(email)" in report_publisher and "No active matching purchase entitlement" in report_publisher,
+      "Paid report publishing must verify the owner's email and active product entitlement")
+check("verifyToken" in download and "authorizedParties" in download,
+      "Downloads must require a verified Clerk session from the production origin")
+check("active" in download and "lower(entitlement.customer_email)" in download,
+      "Downloads must require an active purchase for a verified email")
+check('get(rows[0].blob_pathname' in download and 'access: "private"' in download,
+      "Downloads must stream from private Blob storage rather than exposing a public URL")
+check('Cache-Control' in download and 'no-store' in download,
+      "Private downloads must not be cached")
+check("BLOB_READ_WRITE_TOKEN" in download and 'WORKSPACE_ENABLED !== "true"' in download,
+      "Download route must fail closed unless private storage and the workspace gate are configured")
+check('access: "private"' in uploader and "knownProductIds.includes(productId)" in uploader,
+      "Operator upload script must use private Blob and accept only explicitly mapped Dodo product IDs")
+check("private_product_files" in uploader and "25 * 1024 * 1024" in uploader,
+      "Product uploader must register file metadata and enforce the 25 MiB limit")
+check("downloadsAvailable: storageConfigured && (purchases.some" in workspace,
+      "Workspace must expose downloads only when private files are mapped for an active purchase")
+check('"/api/download"' in ui and '"/api/report-download"' in ui and '"?fileId="' in ui,
+      "Purchase UI must provide authenticated downloads without exposing private Blob URLs")
+check('"svix"' in package and '"@clerk/backend"' in package and '"@neondatabase/serverless"' in package and '"@vercel/blob"' in package,
+      "Required authentication, database, webhook and private storage packages must be declared")
 
 if errors:
     print(f"FAIL: {len(errors)} of {checks} workspace security checks failed")

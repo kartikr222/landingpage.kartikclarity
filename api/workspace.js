@@ -55,13 +55,14 @@ module.exports = async (req, res) => {
   try {
     const sql = neon(process.env.DATABASE_URL);
     const emails = identity.emails;
+    const storageConfigured = Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 
     // Use individually parameterized placeholders rather than relying on driver-specific
     // JavaScript-array serialization for PostgreSQL ANY(...).
     const reportEmailClause = emails.length
       ? `lower(owner_email) IN (${emails.map((_, index) => `$${index + 2}`).join(", ")})`
       : "FALSE";
-    const reports = await sql.query(
+    let reports = await sql.query(
       `SELECT id, title, report_type, score, summary, findings,
               recommendations, action_plan, created_at, updated_at
        FROM workspace_reports
@@ -72,6 +73,31 @@ module.exports = async (req, res) => {
       [identity.userId, ...emails]
     );
 
+    let reportFiles = [];
+    const reportIds = reports.map((report) => report.id).filter(Boolean);
+    if (storageConfigured && reportIds.length && emails.length) {
+      const reportPlaceholders = reportIds.map((_, index) => "$" + (index + 2)).join(", ");
+      const emailPlaceholders = emails.map((_, index) => "$" + (reportIds.length + index + 2)).join(", ");
+      reportFiles = await sql.query(
+        "SELECT f.id, f.report_id, f.file_name FROM private_report_files f " +
+        "WHERE f.active = TRUE AND f.owner_clerk_user_id = $1 AND f.report_id IN (" + reportPlaceholders + ") " +
+        "AND EXISTS (SELECT 1 FROM purchase_entitlements e WHERE e.product_id = f.product_id " +
+        "AND e.provider = 'dodo' AND e.status = 'active' AND lower(e.customer_email) IN (" + emailPlaceholders + ")) " +
+        "ORDER BY f.report_id, f.file_name LIMIT 200",
+        [identity.userId, ...reportIds, ...emails]
+      );
+    }
+    const filesByReport = new Map();
+    for (const file of reportFiles) {
+      const key = String(file.report_id);
+      if (!filesByReport.has(key)) filesByReport.set(key, []);
+      filesByReport.get(key).push({ id: file.id, file_name: file.file_name });
+    }
+    reports = reports.map((report) => ({
+      ...report,
+      downloads: filesByReport.get(String(report.id)) || [],
+    }));
+
     const productsConfigured = [
       process.env.DODO_PRODUCT_ID_WORKBOOK_19,
       process.env.DODO_PRODUCT_ID_TOOLKIT_27,
@@ -81,15 +107,38 @@ module.exports = async (req, res) => {
     const purchasesAvailable = Boolean(process.env.DODO_WEBHOOK_SECRET && productsConfigured);
     let purchases = [];
     if (purchasesAvailable && emails.length) {
-      const emailPlaceholders = emails.map((_, index) => `$${index + 1}`).join(", ");
-      purchases = await sql.query(
-        `SELECT entitlement_key, product_name, purchased_at, status, status_reason
-         FROM purchase_entitlements
-         WHERE lower(customer_email) IN (${emailPlaceholders})
-         ORDER BY purchased_at DESC
-         LIMIT 100`,
+      const emailPlaceholders = emails.map((_, index) => "$" + (index + 1)).join(", ");
+      const rows = await sql.query(
+        "SELECT product_id, entitlement_key, product_name, purchased_at, status, status_reason " +
+        "FROM purchase_entitlements WHERE lower(customer_email) IN (" + emailPlaceholders + ") " +
+        "ORDER BY purchased_at DESC LIMIT 100",
         emails
       );
+
+      const productIds = [...new Set(rows.map((purchase) => purchase.product_id).filter(Boolean))];
+      let files = [];
+      if (storageConfigured && productIds.length) {
+        const productPlaceholders = productIds.map((_, index) => "$" + (index + 1)).join(", ");
+        files = await sql.query(
+          "SELECT id, product_id, file_name FROM private_product_files " +
+          "WHERE active = TRUE AND product_id IN (" + productPlaceholders + ") " +
+          "ORDER BY product_id, file_name LIMIT 200",
+          productIds
+        );
+      }
+
+      const filesByProduct = new Map();
+      for (const file of files) {
+        const key = String(file.product_id);
+        if (!filesByProduct.has(key)) filesByProduct.set(key, []);
+        filesByProduct.get(key).push({ id: file.id, file_name: file.file_name });
+      }
+      purchases = rows.map((purchase) => ({
+        ...purchase,
+        downloads: purchase.status === "active"
+          ? (filesByProduct.get(String(purchase.product_id)) || [])
+          : [],
+      }));
     }
 
     return json(res, 200, {
@@ -98,7 +147,7 @@ module.exports = async (req, res) => {
       capabilities: {
         reportsAvailable: true,
         purchasesAvailable,
-        downloadsAvailable: false,
+        downloadsAvailable: storageConfigured && (purchases.some((purchase) => purchase.downloads.length > 0) || reports.some((report) => report.downloads.length > 0)),
       },
     });
   } catch (_) {

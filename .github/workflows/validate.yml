@@ -1,0 +1,27 @@
+name: Validate website and workspace
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install declared runtime dependencies
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Validate public website
+        run: python scripts/validate_site.py
+      - name: Validate workspace security invariants
+        run: python scripts/validate_workspace.py
+      - name: Check JavaScript syntax
+        run: |
+          find api -type f -name '*.js' -print0 | xargs -0 -n1 node --check
+          node --check scripts/upload_private_product.mjs
+          node --check scripts/publish_client_report.mjs
