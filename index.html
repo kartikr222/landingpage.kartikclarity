@@ -1350,7 +1350,7 @@
     if(!url)return;
     if(/^mailto:/i.test(href)){track("contact_email_click",{link_text:"Email link",page_path:window.location.pathname});return;}
     var sameOrigin=url.origin===window.location.origin;
-    if(/(^|\.)checkout\.dodopayments\.com$/i.test(url.hostname)){
+    if(/(^|\.)checkout\.dodopayments\.com$|(^|\.)dodo\.pe$/i.test(url.hostname)){
       // This records checkout intent only, never a completed purchase. Delay navigation
       // briefly so GA4 has a chance to dispatch the event; always fall back if blocked.
       event.preventDefault();
