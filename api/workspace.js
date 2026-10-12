@@ -73,7 +73,7 @@ module.exports = async (req, res) => {
     ].some(Boolean);
     const purchasesAvailable = Boolean(process.env.DODO_WEBHOOK_SECRET && productsConfigured);
     const purchases = purchasesAvailable ? await sql`
-      SELECT entitlement_key, product_name, purchased_at
+      SELECT entitlement_key, product_name, purchased_at, status, status_reason
       FROM purchase_entitlements
       WHERE lower(customer_email) = ANY(${emails}::text[])
       ORDER BY purchased_at DESC
