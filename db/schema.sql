@@ -113,3 +113,30 @@ CREATE UNIQUE INDEX IF NOT EXISTS private_product_files_active_name_idx
   ON private_product_files (product_id, file_name) WHERE active = TRUE;
 CREATE INDEX IF NOT EXISTS private_product_files_product_idx
   ON private_product_files (product_id, active);
+
+
+-- Private product deliverables live in a private Vercel Blob store.
+-- Only metadata is stored here; customer downloads must pass the entitlement check
+-- in api/download.js before the server streams a private blob.
+CREATE TABLE IF NOT EXISTS private_product_files (
+  id BIGSERIAL PRIMARY KEY,
+  product_id TEXT NOT NULL,
+  blob_pathname TEXT NOT NULL UNIQUE,
+  file_name TEXT NOT NULL,
+  content_type TEXT NOT NULL CHECK (
+    content_type IN (
+      'application/pdf',
+      'application/zip',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+  ),
+  size_bytes BIGINT NOT NULL CHECK (size_bytes > 0 AND size_bytes <= 26214400),
+  active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE UNIQUE INDEX IF NOT EXISTS private_product_files_active_name_idx
+  ON private_product_files (product_id, file_name) WHERE active = TRUE;
+CREATE INDEX IF NOT EXISTS private_product_files_product_idx
+  ON private_product_files (product_id, active);
