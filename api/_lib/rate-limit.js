@@ -23,9 +23,9 @@ function createRateLimiter({ query, secret, now = () => Date.now(), cleanupEvery
     const windowStart = Math.floor(now() / (windowSeconds * 1000));
     const rows = await query(
       "INSERT INTO rate_limit_counters (key_hash, window_start, count, expires_at) " +
-      "VALUES ($1, $2, 1, to_timestamp(($2 + 1) * $3)) " +
+      "VALUES ($1, $2, 1, $3::timestamptz) " +
       "ON CONFLICT (key_hash, window_start) DO UPDATE SET count = rate_limit_counters.count + 1 RETURNING count",
-      [keyHash, windowStart, windowSeconds]
+      [keyHash, windowStart, new Date((windowStart + 1) * windowSeconds * 1000).toISOString()]
     );
     const count = Number(rows && rows[0] && rows[0].count);
     if (!Number.isSafeInteger(count) || count < 1) throw new Error("Invalid rate-limit counter.");
