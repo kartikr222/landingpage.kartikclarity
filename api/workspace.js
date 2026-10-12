@@ -75,13 +75,16 @@ module.exports = async (req, res) => {
 
     let reportFiles = [];
     const reportIds = reports.map((report) => report.id).filter(Boolean);
-    if (storageConfigured && reportIds.length) {
+    if (storageConfigured && reportIds.length && emails.length) {
       const reportPlaceholders = reportIds.map((_, index) => "$" + (index + 2)).join(", ");
+      const emailPlaceholders = emails.map((_, index) => "$" + (reportIds.length + index + 2)).join(", ");
       reportFiles = await sql.query(
-        "SELECT id, report_id, file_name FROM private_report_files " +
-        "WHERE active = TRUE AND owner_clerk_user_id = $1 AND report_id IN (" + reportPlaceholders + ") " +
-        "ORDER BY report_id, file_name LIMIT 200",
-        [identity.userId, ...reportIds]
+        "SELECT f.id, f.report_id, f.file_name FROM private_report_files f " +
+        "WHERE f.active = TRUE AND f.owner_clerk_user_id = $1 AND f.report_id IN (" + reportPlaceholders + ") " +
+        "AND EXISTS (SELECT 1 FROM purchase_entitlements e WHERE e.product_id = f.product_id " +
+        "AND e.provider = 'dodo' AND e.status = 'active' AND lower(e.customer_email) IN (" + emailPlaceholders + ")) " +
+        "ORDER BY f.report_id, f.file_name LIMIT 200",
+        [identity.userId, ...reportIds, ...emails]
       );
     }
     const filesByReport = new Map();
