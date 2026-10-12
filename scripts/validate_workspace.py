@@ -64,6 +64,16 @@ check("No configured product mapping matched" in webhook,
       "Unmapped products must fail closed")
 check("ON CONFLICT (provider, payment_id, product_id)" in webhook,
       "Repeated webhook deliveries must be idempotent")
+check("payment_lifecycle" in webhook and "payment_lifecycle" in schema,
+      "Payment lifecycle must protect against out-of-order refund/dispute events")
+check('event.type === "refund.succeeded"' in webhook,
+      "Successful refunds must be handled")
+check('data.is_partial === true' in webhook,
+      "Partial refunds must be distinguished from full refunds")
+check('event.type === "dispute.opened"' in webhook and 'event.type === "dispute.lost"' in webhook,
+      "Payment dispute lifecycle must be handled")
+check("status_reason" in workspace and "status" in workspace,
+      "Workspace must show whether purchase access is active, paused or revoked")
 for env in (
     "DODO_PRODUCT_ID_WORKBOOK_19",
     "DODO_PRODUCT_ID_TOOLKIT_27",
