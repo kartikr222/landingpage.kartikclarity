@@ -14,14 +14,21 @@ CREATE TABLE IF NOT EXISTS workspace_reports (
   action_plan JSONB NOT NULL DEFAULT '[]'::jsonb,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  source_request_id TEXT,
   CONSTRAINT workspace_reports_owner_check
     CHECK (owner_clerk_user_id IS NOT NULL OR owner_email IS NOT NULL)
 );
 
 CREATE INDEX IF NOT EXISTS workspace_reports_owner_id_idx
   ON workspace_reports (owner_clerk_user_id, created_at DESC);
+ALTER TABLE workspace_reports
+  ADD COLUMN IF NOT EXISTS source_request_id TEXT;
+
 CREATE INDEX IF NOT EXISTS workspace_reports_owner_email_idx
   ON workspace_reports (lower(owner_email), created_at DESC);
+CREATE UNIQUE INDEX IF NOT EXISTS workspace_reports_request_id_idx
+  ON workspace_reports (owner_clerk_user_id, source_request_id)
+  WHERE source_request_id IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS purchase_entitlements (
   id BIGSERIAL PRIMARY KEY,
