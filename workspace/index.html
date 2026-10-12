@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#0a1730">
+  <title>Client Workspace | Kartik Clarity™</title>
+  <meta name="description" content="Private Kartik Clarity client workspace for verified purchases and client-specific reports.">
+  <link rel="icon" href="/logo-circle.jpeg" type="image/jpeg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{color-scheme:light;--navy:#0a1730;--navy2:#13264a;--cyan:#bcebed;--ink:#172033;--muted:#66718a;--line:#dfe5ee;--paper:#f5f7fb;--white:#fff;--good:#176b51}
+    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.55}
+    a{color:inherit}button{font:inherit}.top{background:var(--navy);color:#fff;border-bottom:1px solid #263a60}
+    .nav{max-width:1120px;margin:auto;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+    .brand{font-weight:700;letter-spacing:.01em;text-decoration:none}.brand span{display:block;color:var(--cyan);font-size:11px;letter-spacing:.15em;text-transform:uppercase;font-weight:600}
+    .nav a.back{color:#dce6f8;text-decoration:none;font-size:14px}.wrap{max-width:1120px;margin:0 auto;padding:42px 24px 72px}
+    .eyebrow{color:#52718f;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+    h1,h2,h3{font-family:Fraunces,Georgia,serif;line-height:1.15}h1{font-size:clamp(34px,5vw,52px);margin:10px 0 14px;color:var(--navy)}h2{font-size:25px;margin:0 0 8px}
+    .intro{max-width:710px;color:var(--muted);font-size:16px;margin:0 0 30px}
+    .notice{background:#fff;border:1px solid var(--line);border-radius:18px;padding:26px;max-width:760px;box-shadow:0 12px 32px #0a17300a}
+    .notice p{color:var(--muted);margin:8px 0 0}.status{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:99px;padding:6px 10px;font-size:12px;color:#59657a;background:#fff;margin-bottom:16px}
+    .dot{width:7px;height:7px;border-radius:50%;background:#d18b27}.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+    .btn{display:inline-flex;justify-content:center;align-items:center;border:1px solid var(--navy);border-radius:9px;background:var(--navy);color:#fff;padding:11px 16px;text-decoration:none;font-size:14px;font-weight:600;cursor:pointer}
+    .btn.secondary{background:#fff;color:var(--navy);border-color:var(--line)}.small{font-size:13px;color:var(--muted)}
+    #sign-in{max-width:480px;margin-top:20px}#sign-in:empty{display:none}
+    .dashboard-head{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:18px}
+    .panel,.report{background:#fff;border:1px solid var(--line);border-radius:15px;padding:22px;min-width:0}
+    .panel p{color:var(--muted);margin:8px 0 0}.report h3{font-size:20px;margin:0 0 8px}.report p{color:var(--muted);margin:6px 0}.report-meta{font-size:12px;color:var(--muted);margin-bottom:12px}
+    .report-list{display:grid;gap:14px}.report-section{margin-top:12px}.report-section strong{font-size:13px}.report-section ul{padding-left:20px;margin:6px 0;color:#46516a}
+    .score{font-size:25px;color:var(--navy);font-weight:700}.empty{padding:20px;border:1px dashed #cbd4e2;border-radius:12px;color:var(--muted);font-size:14px}
+    .error{color:#8b332d!important}.footer{max-width:1120px;margin:auto;padding:0 24px 30px;color:var(--muted);font-size:12px}.footer a{color:inherit}
+    [hidden]{display:none!important}
+    @media(max-width:700px){.wrap{padding:30px 16px 56px}.nav{padding:16px}.grid{grid-template-columns:1fr}.notice{padding:20px}.dashboard-head{align-items:flex-start}}
+  </style>
+</head>
+<body>
+  <header class="top">
+    <nav class="nav" aria-label="Main navigation">
+      <a class="brand" href="/">Kartik Clarity™<span>Client Workspace</span></a>
+      <a class="back" href="/">← Back to the public website</a>
+    </nav>
+  </header>
+  <main class="wrap">
+    <section id="intro">
+      <div class="eyebrow">Private client access</div>
+      <h1>Your work, reports and next steps.</h1>
+      <p class="intro">A single place for your Kartik Clarity assessments, recommendations and eligible purchases. The public website and free assessment remain available without signing in.</p>
+    </section>
+
+    <section id="setup-state" class="notice" aria-live="polite">
+      <span class="status"><span class="dot"></span><span id="status-label">Checking workspace availability</span></span>
+      <h2 id="state-title">Checking setup</h2>
+      <p id="state-copy">We’re checking whether secure sign-in and private report storage are configured.</p>
+      <div class="actions"><a class="btn secondary" href="/">Explore the public website</a><a class="btn" href="mailto:info.kartikclarity@gmail.com?subject=Kartik%20Clarity%20workspace%20access">Ask about access</a></div>
+      <div id="sign-in"></div>
+      <p class="small" id="payment-note"></p>
+    </section>
+
+    <section id="dashboard" hidden>
+      <div class="dashboard-head">
+        <div><div class="eyebrow">Your private workspace</div><h1 style="font-size:38px;margin-bottom:6px">Welcome back</h1><p class="small" id="user-email"></p></div>
+        <div id="user-button"></div>
+      </div>
+      <div class="grid">
+        <section class="panel"><h2>My reports</h2><p>Completed assessments and client-specific deliverables assigned to your account.</p></section>
+        <section class="panel"><h2>My purchases</h2><p id="purchase-status">Purchase access is shown only when a verified payment has been recorded.</p></section>
+      </div>
+      <section style="margin-top:30px"><h2>Reports and action plans</h2><div id="reports" class="report-list" style="margin-top:14px"></div></section>
+      <section style="margin-top:30px"><h2>Purchased products</h2><div id="purchases" class="report-list" style="margin-top:14px"></div></section>
+      <p class="small" style="margin-top:24px">Reports are private to your signed-in account and verified email addresses. Download links are not enabled until secure private file storage is configured.</p>
+    </section>
+  </main>
+  <footer class="footer">Kartik Clarity™ · <a href="/privacy-policy.html">Privacy Policy</a> · <a href="/terms-of-service.html">Terms of Service</a></footer>
+
+  <script>
+    const byId = (id) => document.getElementById(id);
+    const state = (label, title, copy, isError = false) => {
+      byId("status-label").textContent = label;
+      byId("state-title").textContent = title;
+      byId("state-copy").textContent = copy;
+      byId("state-copy").classList.toggle("error", isError);
+    };
+    const element = (tag, className, text) => {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text !== undefined && text !== null) node.textContent = String(text);
+      return node;
+    };
+    const listBlock = (parent, title, values) => {
+      if (!Array.isArray(values) || values.length === 0) return;
+      const section = element("div", "report-section");
+      section.append(element("strong", "", title));
+      const list = element("ul");
+      values.forEach((value) => {
+        const text = typeof value === "string" ? value : (value && (value.title || value.description || value.action || value.name)) || "";
+        if (text) list.append(element("li", "", text));
+      });
+      if (list.children.length) { section.append(list); parent.append(section); }
+    };
+    function renderReports(items) {
+      const target = byId("reports");
+      target.replaceChildren();
+      if (!items.length) {
+        target.append(element("div", "empty", "No reports have been assigned to this account yet. Once a completed assessment or client deliverable is securely added, it will appear here."));
+        return;
+      }
+      items.forEach((report) => {
+        const card = element("article", "report");
+        card.append(element("h3", "", report.title || "Client report"));
+        card.append(element("div", "report-meta", (report.report_type || "Report") + " · " + (report.created_at ? new Date(report.created_at).toLocaleDateString() : "Date not available")));
+        if (report.score !== null && report.score !== undefined) card.append(element("div", "score", "Score: " + report.score));
+        if (report.summary) card.append(element("p", "", report.summary));
+        listBlock(card, "Findings", report.findings);
+        listBlock(card, "Recommendations", report.recommendations);
+        listBlock(card, "Action plan", report.action_plan);
+        target.append(card);
+      });
+    }
+    function renderPurchases(items, enabled) {
+      const target = byId("purchases");
+      target.replaceChildren();
+      if (!enabled) {
+        target.append(element("div", "empty", "Verified purchase activation is not configured yet. Existing checkout links remain separate; this workspace will not claim a purchase has unlocked access until webhook verification is enabled."));
+        return;
+      }
+      if (!items.length) {
+        target.append(element("div", "empty", "No verified purchases are linked to your verified email addresses yet. If you purchased with another email, contact support for help."));
+        return;
+      }
+      items.forEach((purchase) => {
+        const card = element("article", "report");
+        card.append(element("h3", "", purchase.product_name || "Purchased product"));
+        card.append(element("div", "report-meta", "Verified purchase · " + (purchase.purchased_at ? new Date(purchase.purchased_at).toLocaleDateString() : "Date not available")));
+        card.append(element("p", "", "Access is recorded for this purchase. Download delivery will appear here only after secure file storage and the relevant deliverable are configured."));
+        target.append(card);
+      });
+    }
+    async function loadWorkspace() {
+      const token = await window.Clerk.session.getToken();
+      const response = await fetch("/api/workspace", {
+        headers: { Authorization: "Bearer " + token },
+        cache: "no-store"
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        if (response.status === 503) {
+          state("Setup required", "Workspace setup is incomplete", body.message || "Private workspace services are not available yet.", true);
+        } else {
+          state("Unable to load", "We couldn’t load your workspace", body.error || "Please try signing in again.", true);
+        }
+        byId("sign-in").replaceChildren();
+        return;
+      }
+      byId("setup-state").hidden = true;
+      byId("dashboard").hidden = false;
+      byId("user-email").textContent = window.Clerk.user?.primaryEmailAddress?.emailAddress || "Signed-in account";
+      byId("user-button").replaceChildren();
+      window.Clerk.mountUserButton(byId("user-button"));
+      renderReports(Array.isArray(body.reports) ? body.reports : []);
+      renderPurchases(Array.isArray(body.purchases) ? body.purchases : [], Boolean(body.capabilities && body.capabilities.purchasesAvailable));
+      if (!(body.capabilities && body.capabilities.purchasesAvailable)) {
+        byId("purchase-status").textContent = "Purchase activation is not configured yet.";
+      } else {
+        byId("purchase-status").textContent = "Only purchases confirmed by the signed webhook are listed here.";
+      }
+    }
+    async function start() {
+      let config;
+      try {
+        const response = await fetch("/api/config", { cache: "no-store" });
+        config = await response.json();
+      } catch (_) {
+        state("Unavailable", "Workspace status could not be checked", "Please try again later or contact support.", true);
+        return;
+      }
+      if (!config.workspaceReady || !config.publishableKey) {
+        state("Setup required", "Your Client Workspace is being configured", "Secure email sign-in and private report storage are not fully configured yet. No login form is shown until the required services are ready. You can still explore the public site and use the free assessment.");
+        byId("payment-note").textContent = config.paymentsConfigured
+          ? "Payment webhook settings are present; full purchase testing is still required."
+          : "Verified purchase activation is not configured yet.";
+        return;
+      }
+      state("Secure sign-in", "Sign in to your workspace", "Use any email address verified by the sign-in provider. A work email is not required.");
+      byId("payment-note").textContent = config.paymentsConfigured
+        ? "Payment integration is configured; access is granted only after verified payment events and product mapping."
+        : "Purchase unlocks are not enabled until the payment webhook and product mappings are configured.";
+      const script = document.createElement("script");
+      script.async = true;
+      script.crossOrigin = "anonymous";
+      script.setAttribute("data-clerk-publishable-key", config.publishableKey);
+      script.src = "https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/dist/clerk.browser.js";
+      script.onload = async () => {
+        try {
+          await window.Clerk.load({ publishableKey: config.publishableKey });
+          if (window.Clerk.user) {
+            await loadWorkspace();
+          } else {
+            window.Clerk.mountSignIn(byId("sign-in"), { routing: "hash" });
+            window.Clerk.addListener(async (resources) => {
+              if (resources && resources.user) {
+                try { await loadWorkspace(); } catch (_) {
+                  state("Unable to load", "We couldn’t load your workspace", "Please refresh the page and try again.", true);
+                }
+              }
+            });
+          }
+        } catch (_) {
+          state("Sign-in unavailable", "Secure sign-in could not start", "Please check the workspace setup or contact support.", true);
+        }
+      };
+      script.onerror = () => state("Sign-in unavailable", "Secure sign-in could not load", "Please try again later.", true);
+      document.head.append(script);
+    }
+    start();
+  </script>
+</body>
+</html>
