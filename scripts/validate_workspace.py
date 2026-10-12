@@ -71,7 +71,7 @@ check("owner_clerk_user_id IS NULL" in workspace,
 check('"FROM purchase_entitlements WHERE lower(customer_email) IN ("' in workspace and
       'ORDER BY purchased_at DESC LIMIT 100' in workspace and 'emails' in workspace,
       "Purchase reads must use parameterized verified-email ownership filters")
-check("`$${index + 2}`" in workspace and "`$${index + 1}`" in workspace,
+check("`${index + 2}`" in workspace and '"$" + (index + 1)' in workspace,
       "SQL placeholder builders must emit PostgreSQL $N parameters, not bare numbers")
 check("DO $$" in schema and "$$;" in schema,
       "PostgreSQL migration blocks must use valid dollar-quote delimiters")
