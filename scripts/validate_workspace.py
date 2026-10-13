@@ -171,6 +171,9 @@ check("failClosed: true" in download and "failClosed: true" in report_download,
       "Protected downloads must fail closed if request protection is unavailable")
 check("RATE_LIMIT_HASH_SECRET" in docs,
       "Setup guide must document the rate-limit HMAC secret")
+check("const rateLimitConfigured = Boolean(" in config and "databaseConfigured &&" in config and
+      "process.env.RATE_LIMIT_HASH_SECRET.length >= 32" in config and "rateLimitConfigured," in config,
+      "Config endpoint must expose a non-sensitive rate-limit readiness boolean based on database and secret configuration")
 
 if errors:
     print(f"FAIL: {len(errors)} of {checks} workspace security checks failed")
