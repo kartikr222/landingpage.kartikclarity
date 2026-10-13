@@ -14,7 +14,6 @@ function clientIp(req) {
 function createRateLimiter({ query, secret, now = () => Date.now(), cleanupEvery = 100 }) {
   if (typeof query !== "function") throw new TypeError("A database query function is required.");
   if (typeof secret !== "string" || secret.length < 32) throw new Error("RATE_LIMIT_HASH_SECRET must contain at least 32 characters.");
-  let operations = 0;
   return async function consume({ scope, identifier, limit, windowSeconds }) {
     if (!scope || !identifier || !Number.isInteger(limit) || limit < 1 || !Number.isInteger(windowSeconds) || windowSeconds < 1) {
       throw new TypeError("Invalid rate-limit policy.");
