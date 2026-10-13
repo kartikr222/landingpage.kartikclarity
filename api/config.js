@@ -25,6 +25,11 @@ module.exports = (req, res) => {
     process.env.DODO_PRODUCT_ID_AUDIT_9500,
   ].filter(Boolean);
   const storageConfigured = Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+  const rateLimitConfigured = Boolean(
+    databaseConfigured &&
+    typeof process.env.RATE_LIMIT_HASH_SECRET === "string" &&
+    process.env.RATE_LIMIT_HASH_SECRET.length >= 32
+  );
 
   return json(res, 200, {
     workspaceReady,
@@ -33,6 +38,7 @@ module.exports = (req, res) => {
     paymentsConfigured: Boolean(process.env.DODO_WEBHOOK_SECRET && productIds.length),
     mappedProductCount: productIds.length,
     storageConfigured,
+    rateLimitConfigured,
     downloadsConfigured: storageConfigured,
     publishableKey: workspaceReady ? publishableKey : null,
     message: workspaceReady
